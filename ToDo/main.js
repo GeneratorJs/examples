@@ -1,3 +1,5 @@
+// append(header, gen(div, 'card', "card", "card"), "over")
+
 var todoid = 0
 const addtodo = (e) => {
     append(todolist, gen(li, 'list' + todoid++, gen(p, "", e.value), 'list', { "onclick": "edit(this)" }))
@@ -27,6 +29,7 @@ function loadTodo(target) {
     append(todo, gen(ol, "todolist", ""))
 
 
+    append(todo, gen(div, "todobox"), "parent")
 
 
     var scss = `
@@ -83,6 +86,7 @@ function loadTodo(target) {
         
     }
 
+
 `
 
     loadscss(scss)
@@ -90,3 +94,42 @@ function loadTodo(target) {
 
 loadTodo(main)
 // loadTodo(footer)
+
+
+loadscss(`
+
+#todo{
+    position:relative;
+    z-index:3;
+    background-color:hsl(150,60%,10%,0.4);
+    
+}
+textarea{
+    background-color:hsl(150,60%,10%,0.5);
+    color:white;
+}
+
+input{
+    background-color:hsl(270,60%,10%,0.5);
+    color:white;
+}
+
+#todobox{
+    
+    margin-block:20px;
+    position:relative;
+    &:after{
+        content:"";
+        inset:-4px;
+        z-index:1;
+        position:absolute;
+        background-image:conic-gradient(#A100FFFF,#119CFDFF);
+        filter:blur(10px);
+        border-radius:2px;
+    }
+
+   
+}
+
+
+`)
