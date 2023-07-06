@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Calculator using GenetatorJs</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+</head>
+
+<body>
+    <div id="app" class="app">
+        <h1>Hi from HTML</h1>
+    </div>
+
+    <script src="https://generatorjs.github.io/generatorjs.cdn/generator.js">
+    </script>
+    <script>
+        $=GeneratorJs()
+        $.init()
+        load("./calc.scss")
+        append(app, "", "over")
+        var rootElements = 'header,main'
+        rootElements.split(",").forEach(e => {
+            append(app, gen(e, e, e, e))
+        })
+
+        $("#main")[0].classList.add("container")
+        append(main, gen(section, "calc", "", "calc"))
+        append(header, gen(h1, "", "Calculator using GenetatorJs"), "over")
+
+        append(calc, gen(div, "buttonGroup", "", `buttonGroup`),)
+
+        var buttonList = 'C,1,2,3,4,5,6,7,8,9,0,.,+,-,*,/,(,),Del,='
+        buttonList.split(",").forEach(b => {
+            if (`0123456789.`.includes(b) == false) {
+
+                append(buttonGroup, gen(button, b, b, `calcButton, ${b},operator`, { "onclick": "buttonAction(this)" }))
+            }
+            else {
+
+                append(buttonGroup, gen(button, b, b, `calcButton, ${b}`, { "onclick": "buttonAction(this)" }))
+            }
+        })
+        append(calc, gen(input, "expression", "", `expression`), "before")
+        append(main, gen(div, "calcHistory", gen(h2, "", "History"), "calcHistory"))
+
+
+        function buttonAction(e) {
+            var val = e.innerText
+            if (val == "=") {
+                // var res = evalFunction(expression.value)
+                var res = Function("return " + expression.value)()
+                append(calcHistory, gen(span, "", expression.value + ' = ' + res, `calcHistory`, { "onclick": "reEvaluate(this)" }), "after")
+                expression.value = res
+                // append(result, res, "over")
+            } else if (val == "C") {
+                expression.value = ''
+            } else if (val == "Del") {
+                expression.value = expression.value.substring(0, expression.value.length - 1)
+            }
+            else {
+
+                expression.value += val
+            }
+
+
+
+        }
+        window.buttonAction = buttonAction
+
+
+        function reEvaluate(e) {
+            var exp = e.innerText.split("=")[0]
+            expression.value = exp;
+
+        }
+
+        window.reEvaluate = reEvaluate
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>like JS-tricks</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+    <script src="https://generatorjs.github.io/generatorjs.cdn/generator.js"></script>
+    <script defer>
+        window.$ = GeneratorJs()
+        $.init()
+        window.DEBUG = true
+    </script>
+</head>
+
+<body>
+    <div id="app" class="app">
+        <h1>Hi from HTML</h1>
+    </div>
+
+    <script>
+
+        append(app, gen(main, "main", gen(h1, "", "Test Your Front end Skills"), "main container"), "over")
+        append(main, gen(div, "gridRoot", "", 'gridRoot'))
+
+        var blocks = "html,css,js".split(",")
+        blocks.forEach(block => {
+            var id = block + "_block"
+            append(gridRoot, gen(div, id, "", block))
+            append(`#${id}`, gen(h3, "", block))
+            append(`#${id}`, gen(textarea, `${block}_code`, block, "", { "onchange": "updateOutput()" }))
+        })
+
+        block = "op"
+        var id = block + "_block"
+        append(gridRoot, gen(div, id, "", block))
+        append(`#${id}`, gen(h3, "", block))
+        append(`#${id}`, gen(div, `${block}_code`, block, "body", { "onchange": "updateOutput()" }))
+
+
+
+        load("calc.scss")
+
+
+        function updateOutput() {
+            var bodyText = html_code.value
+            var cssText = `.body{
+                ${css_code.value}
+
+            }`
+            var jsText = js_code.value
+
+            append(body, gen(script, "jstest", jsText), "over")
+            loadscss(cssText, "cssText")
+
+
+            <!-- append(op_code, "", "over") -->
+            append(".body", bodyText)
+        }
+
+    </script>
+
+</body>
+
+</html>

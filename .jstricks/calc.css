@@ -1,0 +1,71 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  list-style: none;
+}
+
+html {
+  font-size: 1rem;
+}
+
+.app {
+  color: black;
+  background: grey;
+  min-height: 100vh;
+}
+
+.container {
+  padding-inline: clamp(1em, 10vw, 400px);
+}
+
+.main {
+  padding-block: 4em;
+}
+.main .calc {
+  display: flex;
+  flex-direction: column;
+}
+.main .calc .result {
+  border: 1px solid black;
+  padding: 1em;
+  color: black;
+}
+.main .calc .expression {
+  border: 1px solid black;
+  padding: 1em;
+  color: black;
+  font-size: 1.5em;
+}
+.main .calc .buttonGroup {
+  background: #333;
+  color: white;
+  border: 1px solid black;
+  padding: 1em;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 0.5em;
+}
+.main .calc .buttonGroup .calcButton,
+.main .calc .buttonGroup .operator {
+  border-radius: 5px;
+  color: white;
+  padding: 0.5em;
+  font-size: 2em;
+}
+.main .calc .buttonGroup .calcButton {
+  background: grey;
+}
+.main .calc .buttonGroup .operator {
+  background: orange;
+}
+.main #calcHistory {
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+}
+.main #calcHistory span {
+  display: block;
+  padding: 0.5em;
+}/*# sourceMappingURL=calc.css.map */

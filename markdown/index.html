@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>like JS-tricks</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+    <script src="/generatorjs.cdn/generator.js"></script>
+    <script defer>
+        window.$ = GeneratorJs()
+        $.init()
+        window.DEBUG = true
+    </script>
+</head>
+
+<body>
+    <div id="app" class="app">
+        <h1>Hi from HTML</h1>
+    </div>
+
+    <script>
+
+        var mdExampleText = `# Heading1
+## Heading2
+### Heading3
+#### Heading4
+##### Heading5
+###### Heading6
+
+*italic*
+**bold**
+***bold italic***
+
+> Blockquote
+
+* list1
+* list2
+* list3
+
+
+1. list1
+2. list2
+3. list3
+
+[link](https://www.google.com)
+
+![image](https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png)
+
+\`code\`
+
+\`\`\`javascript
+
+var a=1
+var b=2
+var c=a+b
+console.log(c)
+
+\`\`\`
+
+
+| Tables        | Are           | Cool  |
+|---|:---:|---:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
+
+
+
+- [ ] task1
+- [x] task2
+- [ ] task3
+
+        
+
+        `
+
+         
+
+        
+        append(app,gen(h1, "", "Markdown Preview"), "over")
+        append(app, gen(main, "main", "", "main"))
+        append(main, gen(div, "gridRoot", "", 'gridRoot'))
+
+        var blocks = "markdown".split(",")
+        blocks.forEach(block => {
+            var id = block + "-block"
+            append(gridRoot, gen(div, id, "", block))
+            append(`#${id}`, gen(h3, "", block))
+            append(`#${id}`, gen(pre, `${block}-code`, block, "code", { "onchange": "updateOutput()",contenteditable:"true" }))
+        })
+
+        var blocks = "preview".split(",")
+        blocks.forEach(block => {
+            var id = block + "-block"
+            append(gridRoot, gen(div, id, "", block))
+            append(`#${id}`, gen(h3, "", block))
+            append(`#${id}`, gen(div, `${block}-code`, block, "code", { "onchange": "updateOutput()" }))
+        })
+
+        
+
+        load("calc.scss")
+
+
+        grab("#markdown-code")[0].innerText = mdExampleText
+        
+
+        function updateOutput(){
+            function updatePreview(e){
+                append(`#preview-code`,e,'over')
+            }
+            var mdText=grab("#markdown-code")[0].innerText
+            parsemd(mdText,updatePreview)
+            
+            }
+
+
+
+        var mdCode=grab("#markdown-code")[0]
+        mdCode.addEventListener("keyup", function (e) {
+            updateOutput()
+        })
+
+        mdCode.addEventListener("click", function (e) {
+            updateOutput()
+        })
+
+        mdCode.addEventListener("blur", function (e) {
+            updateOutput()
+        })
+
+
+        
+
+        load(["./md.scss","./main.js"])
+        updateOutput()
+
+
+        grab("#preview-code")[0].addEventListener("dblclick", function (e) {
+            <!-- log("dblclick") -->
+
+            var htmlPreview=grab("#preview-code")[0]
+        var htmlPreviewText=htmlPreview.innerHTML.replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        
+        append("#preview-code",gen(pre,"",htmlPreviewText,) ,"over");  
+        }
+        )   
+    </script>
+
+</body>
+
+</html>

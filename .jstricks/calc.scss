@@ -1,0 +1,48 @@
+* {
+    box-sizing     : border-box;
+    margin         : 0;
+    padding        : 0;
+    text-decoration: none;
+    list-style     : none;
+}
+
+html {
+    font-size: 1rem;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size  : .8rem;
+    line-height: 1.2;
+    color      : #eee;
+    background : hsl(0, 20%, 6%)
+}
+
+.app {
+    min-height: 100vh;
+
+}
+
+.container {
+    padding-inline: clamp(1em, 10vw, 400px);
+
+}
+
+.main {
+    padding-block: 4em;
+
+
+}
+
+#gridRoot {
+    display              : grid;
+    grid-template-columns: repeat(auto-fit, minmax(45%, 1fr));
+    grid-gap             : 1em;
+
+    div {
+        background   : hsl(0, 100%, 10%);
+        padding      : 1em;
+        border-radius: 1em;
+    }
+
+}
