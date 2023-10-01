@@ -1,15 +1,22 @@
+
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
+
+
 PARAGRAPH1
 
-PARAGRAPH2
+<h1 id="">
+html section
+</h1>
 
+<hr>
 
-
-PARAGRAPH3
-
-
-PARAGRAPH4
-
-PARAGRAPH
+```html
+<h1 id="">
+html section
+</h1>
+```
 
 some paragraph some paragraphsome paragraph some paragraphsome paragraph some paragraphsome paragraph some paragraphsome paragraph some paragraphsome paragraph some paragraphsome paragraph some paragraphsome paragraph some paragraph
 
@@ -20,10 +27,12 @@ bold in text **bold**
 bold italic in text ***bold italic***
 
 BLOCKQUOTE
+
 > Blockquote BlockquoteBlockquoteBlockquote Blockquote
 Blockquote Blockquote Blockquote Blockquote Blockquote Blockquote Blockquote Blockquote Blockquote Blockquote 
 
-LISTUNORDERED
+LISTUNORDERED 
+
 * list1
 * list2
 * list3
@@ -38,7 +47,7 @@ LISTORDERED
 2. list2
 3. list3
 
-URL
+URL 
 [link](https://www.google.com)
 
 IMAGEURL
@@ -50,21 +59,16 @@ CODEINLINE
 
 
 CODEMULTILINE
-\`\`\`javascript
 
-var a=1
-var b=2
-var c=a+b
-console.log(c)
-
-\`\`\`
+```cpp
+int a=1
+int b=2
+int c=a+b
+```
 
 TABLE
-| Tables        | Are           | Cool  |
-|---|:---:|---:|
-| col 3 is      | right-aligned | $1600 |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
+
+
 
 
 

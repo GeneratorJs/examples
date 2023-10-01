@@ -1,10 +1,19 @@
 const blockCheck = [
-  // {
-  //   pattern: /^\s*</im,
-  //   type: 'html',
-  //   blockpattern: /^\s*</im,
-  // },
-
+  {
+    pattern: /^\s*```/im,
+    type: 'code',
+    blockpattern: /^\s*```([^\n]*)\n([^`]*)```$/im,
+  },
+  {
+    pattern:/^\s*<(?!\/)([^>\s]*)[^>]*>.*?<\/\1>\s*$/mis,
+    type: 'html',
+    blockpattern: /^\s*<(?!\/)([^>\s]*)[^>]*>.*?<\/\1>\s*$/mis,
+  },
+  {
+    pattern:/<(br|hr|img|area|base|col|embed|input|link|meta|param|source|track|wbr)[^>]*?>/mi,
+    type: 'htmlselfclosing',
+    blockpattern: /<(br|hr|img|area|base|col|embed|input|link|meta|param|source|track|wbr)[^>]*?>/mi,
+  },
   {
     pattern: /^\s*(\w[^\n]*)\n(-|=){4,}/gim,
     type: 'heading',
@@ -16,36 +25,34 @@ const blockCheck = [
     blockpattern: /^\s*#{1,6}\s+([^\n]*)$/im,
   },
   {
-    pattern: /^\s*(\*|\d+\.|-)\s+/im,
-    type: 'list',
-    blockpattern: /^\s*(\*|\d+\.|-)\s+([^\n]*)$/im,
-  },
-
-  {
     pattern: /^\s*-\s+\[(\s+|[xX*])\]\s+/im,
     type: 'checkbox',
     blockpattern: /^\s*-\s+\[(\s+|[xX*])\]\s+([^\n]*)$/gim,
   },
-
- 
+  {
+    pattern: /^\s*(\*|\d+\.|-)\s+/im,
+    type: 'list',
+    blockpattern: /^\s*(\*|\d+\.|-)\s+([^\n]*)$/im,
+  },
+  {
+    pattern: /\[[^\]]*\]:\s+.*$/mi,
+    type: 'reference',
+    blockpattern: /\[[^\]]*\]:\s+.*$/mi,
+  },
   {
     pattern: /^\s*>\s+([^\n]*)$/im,
     type: 'blockquote',
-    pattern: /^\s*>\s+([^\n]*)$/im,
+    blockpattern: /^\s*>\s+([^\n]*)$/im,
   },
   {
     pattern: /^\n+\-{3,}$/im,
     type: 'hr',
-  },
-  {
-    pattern: /^\s*```/im,
-    type: 'code',
-    blockpattern: /^\s*```([^\n]*)\n([^`]*)```$/gim,
-  },
+    blockpattern:/^\n+\-{3,}$/im,
+  }, 
   {
     pattern: /^\s*\|/im,
     type: 'table',
-    blockpattern: /^\s*\|/im,
+    blockpattern: /^\|(.|\n)*?\|\s*\n+$/mi,
   },
   {
     pattern: /^\s*\${2}.*(?<=\$\$)\s*$/im,
@@ -57,16 +64,19 @@ const blockCheck = [
     blockpattern: /^\s*\\\[(.*)(?<=(\\]))\s*$/im,
   },
   {
-    pattern: /^\s*([\w\d]+|(\*|_){1,3}[\w\d]+)[^\n]+$/img,
+    pattern: /^\s*([\w\d]+|(\*|_){1,3}[\w\d]+)[^\n]+$/im,
     type: 'paragraph',
-    // blockpattern: /^\s*([\w\d]+|(\*|_){1,3}[\w\d]+)[^\n]+$/im,
     blockpattern: /^\s*((\*|_){1,3}[\w\d]+|[\w\d]+)[^\n]+$/im,
   },
+  // {
+  //   pattern: /^.*\n*$/mi,
+  //   type: 'unknown',
+  //   blockpattern: /^.*\n*$/mi
+  // }
   
 ];
 
 const checkblocktype = (md, i = 0) => {
-  // log(md)
   for (var i = 0; i <= md.length; i++) {
     
     var teststr = md.substr (i, md.length);
@@ -81,13 +91,12 @@ const checkblocktype = (md, i = 0) => {
 
             var compare = teststr.match (block.pattern);
             if (compare != null && compare.length > 0) {
-                var match="";
+              var match="";
                 var match = teststr.match (block.blockpattern);
-                if (match.length > 0) {
+                if (match!=null && match.length > 0) {
                     var matchlength = match[0].length;
                     log ("Detected "+block.type+" : "+ match[0]);
                     i = i + matchlength-1;
-                    
                  break;
                 }
             }
