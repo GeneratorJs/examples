@@ -95,7 +95,7 @@ const checkblocktype = (md, i = 0) => {
                 var match = teststr.match (block.blockpattern);
                 if (match!=null && match.length > 0) {
                     var matchlength = match[0].length;
-                    log ("Detected "+block.type+" : "+ match[0]);
+                    log ("Detected "+block.type+"\nContent:\n "+ match[0]+"\n\n");
                     i = i + matchlength-1;
                  break;
                 }
@@ -105,19 +105,22 @@ const checkblocktype = (md, i = 0) => {
     }
     
   }
-  return match
+  return {type:block.type,content:match}
 };
 
 const parsemdbeta = (mdinput, callback) => {
   var mdArray=mdinput.split(/\n{2,}/gmi)
   // md = md.substr (0, md.length);
-  html=""
+  var lex=[]
   mdArray.forEach(md => {
     var match=checkblocktype (md);
-    html+=match
-    callback (html);
+    lex.push(match)
+
     
   });
-  
-  return html;
+  console.log(JSON.parse(JSON.stringify(lex)))
+//   if (callback){
+//     callback (html);
+// }
+  return lex;
 };
