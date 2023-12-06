@@ -134,7 +134,7 @@ getfile("./exampleMath.md", (data) => {
   });
 });
 
-$$.init();
+$$.loadCopyright();
 
 
 setTimeout(
