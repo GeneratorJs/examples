@@ -1,100 +1,181 @@
 * {
-    box-sizing     : border-box;
-    margin         : 0;
-    padding        : 0;
-    text-decoration: none;
-    box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
 }
-
-
 
 body {
-    font-family: 'Roboto', sans-serif;
-    font-size  : .8rem;
-    line-height: 1.2;
-    color      : #eee;
-    background-color: #222;
+  font-family: "Roboto", sans-serif;
+  font-size: 0.8rem;
+  line-height: 1.2;
+  color: #eee;
+  background-color: #222;
 }
 
-
-
-
+html,
+body {
+  height: 100vh;
+  margin: 0;
+}
 
 .app {
-    padding: 0;
-    margin: 0;
-    position: relative;
-    height: 100vh;
-    width: 100vw;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  padding: 0;
+  margin: 0;
+  position: relative;
+  height: 100%;
+  max-height: 100%;
+  width: 100vw;
+  display: grid;
+  grid-template-rows: min-content 1fr min-content;
+  // display: flex;
+  // flex-direction: column;
+}
 
+.header,
+.footer {
+  width: 100%;
+
+}
+// .copyrights{
+//   bottom:0 !important;
+// }
+
+.footer{
+  display: block;
+}
+.header{
+  background-color: hsla(160, 100%, 50%, 0.075);
+  display: flex;
+  align-self: center;
 
 }
 
-#main{
-    flex-grow: 1;
+.nav{
+  padding:1rem;
+}
+
+ul{
+  text-decoration: none;
+  list-style: none;
+}
+.main {
+  position: relative;
+  // width: 100%;
+  // display: flex;
+  // flex-direction: row;
+  // flex-wrap: wrap;
+  // justify-content: center;
+  // align-items: center;
+  display: grid;
+  grid-template-rows: min-content 1fr;
+  height: 100%;
+
+  .instructions{
+    // flex-grow: 1;
+    padding:1rem;
+    display: flex;
+    flex-direction: column;
+
+
+  }
+
+
+
+  .optionbar{
+    padding-inline:1rem;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-items: end;
+    
+  }
+  .gridRoot {
+    position: relative;
     width: 100%;
     height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    #gridRoot {
-        width: 100%;
-        height: 100%;
-        
-    
-        
-        // flex-grow: 1;
-        background-color: hsla(0, 0%, 100%, .1);
-        display              : grid;
-        grid-template-columns: repeat(auto-fit, minmax(45%, 1fr));
-    
-        h3{
-            text-transform: capitalize;
-        }
-    
-        #markdown-block{
-            overflow-y: auto;
-            height: 100%;
-            #markdown-code{
-                background-color: hsl(0, 0%, 17%);
-                height: 100%;   
-            
-                &:focus-visible{
-                    border-color: 1px solid red;
-                    outline:0px solid red;
-                }
-            
-            }
-        }
-    
-        #preview-block{
+    max-height: 100%;
+    background-color: hsla(0, 0%, 100%, 0.1);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 
-            overflow-y: auto;
-            height: 100%;
-            #preview-code{
-                background-color: hsl(266, 33%, 9%);
-                color:white;
-                min-height: 100%;   
-            
-            }
-        }
-
+    .block-heading {
+      text-transform: capitalize;
+      padding-inline: 1em;
+      padding-block: .5em;
+      background-color: hsla(160, 100%, 50%, 0.562);
     }
+
+    
+  }
+}
+
+.markdown .code{
+  background-color: hsl(188, 100%, 6%);
+
+  &:focus,&:focus-visible {
+    background-color: hsl(188, 100%, 18%);
+  }
+}
+.preview .code{
+  background-color: hsl(266, 33%, 9%);
+  padding:1em;
+}
+.column {
+  min-height: 0px;
+  max-height: 100%;
+  display:grid;
+  grid-template-rows: min-content 1fr;
+  height: 100%;
+
+
+  .box{
+    max-height: 100%;
+    overflow: hidden;
+    min-height: 0px;
+
+    .scrolly {
+      height: 100%;
+      overflow-y: auto;
+      min-height: 0px;
+    }
+
+    .code {
+      padding: 1em;
+    }
+  }
+
 }
 
 
 
 
-
-
-
-.code{
-    height: 100%;
-    overflow: auto;
-    padding:1em;
+.header{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
+
+a{
+  text-decoration: none;
+  color:aquamarine;
+  text-decoration: underline;
+}
+
+.button{
+  padding:.5em;
+  border-radius: .5em;
+  box-shadow: 1px 1px 2px hsla(20,50%,80%,.8);
+  background-color: aquamarine;
+  color:black;
+  margin-block: .5em;;
+  flex-grow: 0;
+  width: min-content;
+  font-weight: bolder;
+  transition: all 500ms ease-in-out;
+  &:hover{
+    background-color: hsl(188, 100%, 39%);
+  }
+
+}

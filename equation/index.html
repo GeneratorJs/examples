@@ -8,13 +8,14 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>like JS-tricks</title>
-    <meta name="description" content="">
+    <title>Equation Preview based on MathJax</title>
+    <meta name="description" content="Equation Preview based on MathJax. To test LaTeX equation or to test the output of MathJax output. Enter the equation in left side and rendered output will be shown on the right.">
+    <meta name="copyrights" content="mgeek.in">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="">
     
 	<script src="https://generatorjs.github.io/generatorjs.cdn/generator.js"></script>
-
+	<script src="https://generatorjs.github.io/generatorjs.cdn/generatorWebHelper.js"></script>
     
     
     <!-- MathJax -->
@@ -50,10 +51,14 @@
         window.$ = GeneratorJs()
         $.init()
         window.DEBUG = true
+        
+        window.$$ = GeneratorWebHelper()
+        
     </script>
     <script>
-        load("./parsemdbeta.js")
+
         load("main.js")
+        
         
     </script>
 
