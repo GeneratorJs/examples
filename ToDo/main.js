@@ -19,14 +19,24 @@ const update = (e) => {
 
 }
 
+function loadheader() {
+    append(header, gen(div, 'card', "", "card"), "over")
+    append(card,gen(nav,"nav",))
+    append(nav,gen(ul,"navlist",""))
+    append(navlist,gen(li,"",gen(a,"back","Examples","","/examples/")))
+    append(navlist,gen(li,"",gen(a,"back","Home","","/")))
+}
+
+
+loadheader()
+
 function loadTodo(target) {
 
     append(target,"",'o')
 
     append(target, gen(section, "todo", gen(h1, '', "Todo App with GeneratorJs")), "over")
 
-    append(todo,gen(addtodo,"back","Back to Examples","","/examples/"))
-    append(todo,gen(addtodo,"home","Home","","/"))
+
     append(todo, gen(textarea, "input", "", "input", { "value": "Enter your todo here", "onblur": "addtodo(this)" }))
     append(todo, gen(ol, "todolist", ""))
 
@@ -135,3 +145,5 @@ input{
 
 
 `)
+
+load("/header.js")

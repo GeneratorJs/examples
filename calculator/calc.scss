@@ -21,8 +21,29 @@ html {
 
 }
 
-.main {
-    padding-block: 4em;
+#nav{
+    display: flex;
+    justify-content: space-between;
+    color: white;
+    ul{
+        display: flex;
+        justify-content: space-between;
+        li{
+            padding: 1em;
+            a{
+                color: white;
+            }
+        }
+    }
+}
+
+#calc{
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+// #main {
+//     padding-block: 4em;
 
     .calc {
         display: flex;
@@ -86,4 +107,4 @@ html {
         }
 
     }
-}
+// }
