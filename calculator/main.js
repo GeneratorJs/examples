@@ -73,4 +73,4 @@ function loadCalculator(target) {
 loadCalculator(main)
 
 load("./calc.scss")
-load("/header.js")
+load(["/defaults.js","/header.js"])

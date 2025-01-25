@@ -146,4 +146,4 @@ input{
 
 `)
 
-load("/header.js")
+load(["/defaults.js","/header.js"])
