@@ -21,10 +21,12 @@ const update = (e) => {
 
 function loadTodo(target) {
 
-
+    append(target,"",'o')
 
     append(target, gen(section, "todo", gen(h1, '', "Todo App with GeneratorJs")), "over")
 
+    append(todo,gen(addtodo,"back","Back to Examples","","/examples/"))
+    append(todo,gen(addtodo,"home","Home","","/"))
     append(todo, gen(textarea, "input", "", "input", { "value": "Enter your todo here", "onblur": "addtodo(this)" }))
     append(todo, gen(ol, "todolist", ""))
 
