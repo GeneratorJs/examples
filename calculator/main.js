@@ -34,7 +34,7 @@ function loadCalculator(target) {
         }
     })
     append(calc, gen(input, "expression", "", `expression`), "before")
-    append(main, gen(div, "calcHistory", gen(h2, "", "History"), "calcHistory"))
+    append(calc, gen(div, "calcHistory", gen(h2, "", "History"), "calcHistory"))
 
 
     function buttonAction(e) {
@@ -74,3 +74,8 @@ loadCalculator(main)
 
 load("./calc.scss")
 load(["/defaults.js","/header.js"])
+
+
+var $$ = GeneratorWebHelper()
+
+$$.init()

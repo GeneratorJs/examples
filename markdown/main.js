@@ -1,3 +1,5 @@
+load("./parsemdbeta.js");
+
 const loadSkelton =()=> {
   append(app, gen(header, "header", "", "header"), "o");
   append(header, gen(nav, "nav", gen(ul,"navlist",gen(li,"",gen(a,"","Home","","/"))), "nav"));
@@ -86,12 +88,15 @@ function mathjaxUpdate() {
 }
 
 function updateOutput() {
+  log("clear")
   function updatePreview(e) {
+
     append(`#preview-code`, e, "over");
   }
   var mdText = grab("#markdown-code")[0].innerText;
-  parsemd(mdText, updatePreview);
-  //    parsemdbeta(mdText, updatePreview);
+  // parsemd(mdText, updatePreview);
+  log(mdText);
+    //  parsemdbeta(mdText, updatePreview);
   mathjaxUpdate();
 }
 
@@ -108,7 +113,6 @@ getfile("./exampleMarkdown.md", (data) => {
   var mdCode = grab("#markdown-code")[0];
   mdCode.addEventListener("keypress", function (e) {
     updateOutput();
-
   });
 
 

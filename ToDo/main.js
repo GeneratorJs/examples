@@ -147,3 +147,7 @@ input{
 `)
 
 load(["/defaults.js","/header.js"])
+
+var $$ = GeneratorWebHelper()
+
+$$.init()

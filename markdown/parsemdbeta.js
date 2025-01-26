@@ -1,11 +1,11 @@
 const blockCheck = [
   {
-    pattern: /^\s*```/im,
+    pattern: /^\s*```\w*/igm,
     type: 'code',
-    blockpattern: /^\s*```([^\n]*)\n([^`]*)```$/im,
+    blockpattern: /^\s*```([^\n]*)\n([^`]*)```$/gm,
   },
   {
-    pattern:/^\s*<(?!\/)([^>\s]*)[^>]*>.*?<\/\1>\s*$/mis,
+    pattern:/^\s*<(?!\/)([^>\s]*)[^>]*>.*?<\/\1>\s*$/mig,
     type: 'html',
     blockpattern: /^\s*<(?!\/)([^>\s]*)[^>]*>.*?<\/\1>\s*$/mis,
   },
@@ -30,8 +30,13 @@ const blockCheck = [
     blockpattern: /^\s*-\s+\[(\s+|[xX*])\]\s+([^\n]*)$/gim,
   },
   {
-    pattern: /^\s*(\*|\d+\.|-)\s+/im,
+    pattern: /^(\*|\d+\.|-)\s+/im,
     type: 'list',
+    blockpattern: /^\s*(\*|\d+\.|-)\s+([^\n]*)$/im,
+  },
+  {
+    pattern: /^\s*(\*|\d+\.|-)\s+/im,
+    type: 'sublist',
     blockpattern: /^\s*(\*|\d+\.|-)\s+([^\n]*)$/im,
   },
   {
@@ -105,19 +110,33 @@ const checkblocktype = (md, i = 0) => {
     }
     
   }
-  return {type:block.type,content:match}
+  return {type:block.type,content:match[0]}
 };
 
 const parsemdbeta = (mdinput, callback) => {
-  var mdArray=mdinput.split(/\n{2,}/gmi)
-  // md = md.substr (0, md.length);
+
+
+
+  //check mdinput with checkblocktype then return match and remove matched part from mdinput and repeat till mdinput length is zero
   var lex=[]
-  mdArray.forEach(md => {
-    var match=checkblocktype (md);
+  while (mdinput.length > 0) {
+    var match=checkblocktype(mdinput);
+    // log(match)
     lex.push(match)
+    console.log(match.content)
+    mdinput = mdinput.substr (match.content.length);
+  }
+
+  // var mdArray=mdinput.split(/\n{2,}/gmi)
+  // // md = md.substr (0, md.length);
+  // // log(mdArray)
+  // mdArray.forEach(md => {
+  //   var match=checkblocktype(md);
+  //   lex.push(match)
+  //   // log(lex)
 
     
-  });
+  // });
   console.log(JSON.parse(JSON.stringify(lex)))
 //   if (callback){
 //     callback (html);
