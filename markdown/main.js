@@ -87,16 +87,13 @@ function mathjaxUpdate() {
   }, 2000);
 }
 
-function updateOutput() {
-  log("clear")
-  function updatePreview(e) {
-
+ function updateOutput() {
+  const updatePreview = (e) => {
     append(`#preview-code`, e, "over");
   }
   var mdText = grab("#markdown-code")[0].innerText;
   // parsemd(mdText, updatePreview);
-  log(mdText);
-    //  parsemdbeta(mdText, updatePreview);
+  parsemdbeta(mdText, updatePreview);
   mathjaxUpdate();
 }
 
