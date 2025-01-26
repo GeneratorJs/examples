@@ -76,6 +76,8 @@ load("./calc.scss")
 load(["/defaults.js","/header.js"])
 
 
+append("footer",gen(footer,"footer","","footer"),"o")
+
 var $$ = GeneratorWebHelper()
 
 $$.init()
