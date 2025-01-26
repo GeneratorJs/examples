@@ -129,9 +129,7 @@ getfile("./exampleMarkdown.md", (data) => {
   });
 });
 
-append("#header",gen(header,"appheader","","header"),"r")
 
-load(["/defaults.js","/header.js"])
 
 
 $$.loadCopyright();
@@ -142,3 +140,7 @@ setTimeout(
   grab("#markdown-code")[0].click()
   grab("#markdown-code")[0].focus()},3000
 )
+
+append("#header",gen(header,"appheader","","header"),"r")
+
+load(["/defaults.js","/header.js"])
