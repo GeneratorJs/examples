@@ -129,6 +129,11 @@ getfile("./exampleMarkdown.md", (data) => {
   });
 });
 
+append("#header",gen(header,"appheader","","header"),"r")
+
+load(["/defaults.js","/header.js"])
+
+
 $$.loadCopyright();
 
 
