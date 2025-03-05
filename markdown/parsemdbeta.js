@@ -31,19 +31,10 @@ const blockCheck = [
     renderpattern: /^\s*([#]+)\s+([^\n]*)$/gmi,
   },
   {
-    pattern: /^\s*-\s+\[(\s+|[xX*])\]\s+/im,
+    pattern: /^\s*-\s+\[(\s*|[xX*])\]\s+/im,
     type: 'checkbox',
-    blockpattern: /^\s*-\s+\[(\s+|[xX*])\]\s+([^\n]*)$/im,
-  },
-  {
-    pattern: /^(\*|\d+\.|-)\s+/im,
-    type: 'list',
-    blockpattern: /^\s*(\*|\d+\.|-)\s+([^\n]*)$/im,
-  },
-  {
-    pattern: /^\s*(\*|\d+\.|-)\s+/im,
-    type: 'sublist',
-    blockpattern: /^\s*(\*|\d+\.|-)\s+([^\n]*)$/im,
+    blockpattern: /^\s*-\s+\[(\s*|[xX*])\]\s+([^\n]*)$/im,
+    renderpattern: /^\s*-\s+\[(\s*|[xX*])\]\s+([^\n]*)$/gim,
   },
   {
     pattern: /\[[^\]]*\]:\s+.*$/mi,
@@ -54,11 +45,22 @@ const blockCheck = [
     pattern: /^\s*>\s+([^\n]*)$/im,
     type: 'blockquote',
     blockpattern: /^\s*>\s+([^\n]*)$/im,
+    renderpattern: /^\s*>\s+([^\n]*)$/gim,
   },
   {
     pattern: /^\n+\-{3,}$/im,
     type: 'hr',
     blockpattern: /^\n+\-{3,}$/im,
+  },
+  {
+    pattern: /^(\*|\d+\.|-)\s+/im,
+    type: 'list',
+    blockpattern: /^\s*(\*|\d+\.|-)\s+([^\n]*)$/im,
+  },
+  {
+    pattern: /^\s*(\*|\d+\.|-)\s+/im,
+    type: 'sublist',
+    blockpattern: /^\s*(\*|\d+\.|-)\s+([^\n]*)$/im,
   },
   {
     pattern: /^\s*\|/im,
@@ -75,9 +77,16 @@ const blockCheck = [
     blockpattern: /^\s*\\\[(.*)(?<=(\\]))\s*$/im,
   },
   {
-    pattern: /^\s*([\w\d]+|(\*|_){1,3}[\w\d]+)[^\n]+$/im,
+    pattern: /^([^\n]+)$/im,
     type: 'paragraph',
+    blockpattern: /^([^\n]+)$/im,
+    renderpattern: /^([^\n]+)$/gim,
+  },
+  {
+    pattern: /^\s*([\w\d]+|(\*|_){1,3}[\w\d]+)[^\n]+$/im,
+    type: 'bolditalic',
     blockpattern: /^\s*((\*|_){1,3}[\w\d]+|[\w\d]+)[^\n]+$/im,
+    renderpattern: /^\s*((\*|_){1,3}[\w\d]+|[\w\d]+)[^\n]+$/gim,
   },
   {
     pattern: /^\s*$/,
@@ -120,6 +129,8 @@ const checkBlockType = (mdinput) => {
 
 
 const parsemdbeta = (mdinput, callback) => {
+
+  var checkboxno = grab("input").length
   
   //check mdinput with checkblocktype then return match and remove matched part from mdinput and repeat till mdinput length is zero
   var lex = []
@@ -189,15 +200,54 @@ const parsemdbeta = (mdinput, callback) => {
     }
     else if (type == 'headinglined') {
       var match1 = content.matchAll(pattern)
-      // log(content)
       var matchList = Array.from(match1)
-      // log(matchList)
       var renderedOutput = "";
       matchList.forEach(p => {
         if (p[2].includes("=")) { htag="2" } else { htag="1" }
         renderedOutput = `<h${htag}>${p[1]}</h${htag}>\n`
       });
     }
+    //checkbox
+    else if (type == 'checkbox') {
+      checkboxno +=1;
+      var match1 = content.matchAll(pattern)
+      var matchList = Array.from(match1)
+      var renderedOutput = "";
+      matchList.forEach(p => {
+        var boxid =`parsedcheckbox${checkboxno}`
+        if ((p[1].length>0) ^ (p[1]!==" ")) { checked = ""} else { var checked = "checked" }
+        renderedOutput = `<input type="checkbox" id="${boxid}" name="${boxid}" value="${p[2]}" ${checked}>
+                          <label for="${boxid}"> ${p[2]}</label><br>`       
+      });
+    }
+    //blockquote
+    else if (type == 'blockquote') {
+      checkboxno +=1;
+      var match1 = content.match(pattern)
+      var matchList = Array.from(match1)
+      var renderedOutput = "";
+      matchList.forEach(p => {
+        renderedOutput = `<blockquote>${p[1]}</blockquote>`       
+      });
+    }
+    //reference
+    //hr
+    //list
+    //sublist
+    //table
+    //math2
+    //math1
+    //paragraph
+    else if (type == 'paragraph') {
+      checkboxno +=1;
+      var match1 = content.matchAll(pattern)
+      var matchList = Array.from(match1)
+      var renderedOutput = "";
+      var p = matchList[0]
+      renderedOutput = `<p>${p[1]}</p>`       
+      
+    }
+    //empty
 
     
     return renderedOutput;
