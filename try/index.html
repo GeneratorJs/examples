@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Equation Preview based on MathJax</title>
+    <meta name="description" content="Equation Preview based on MathJax. To test LaTeX equation or to test the output of MathJax output. Enter the equation in left side and rendered output will be shown on the right.">
+    <meta name="copyrights" content="mgeek.in">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="">
+    
+	<!-- <script src="../../generatorjs.cdn/generator.js"></script>
+	<script src="../../generatorjs.cdn/generatorWebHelper.js"></script>
+     -->
+   
+     <script>
+      // Function to dynamically load a script
+      function loadScript(src, isAsync = false, isDefer = false) {
+        const script = document.createElement('script');
+        script.src = src;
+        if (isAsync) script.async = true;
+        if (isDefer) script.defer = true;
+        document.head.appendChild(script);
+      }
+  
+      // Check internet connectivity and access to the remote JS file
+      fetch('https://generatorjs.github.io/generatorjs.cdn/generator.js', { method: 'HEAD' })
+        .then(() => {
+          // If accessible, load remote scripts
+          console.log('Remote scripts are available.');
+          loadScript('https://generatorjs.github.io/generatorjs.cdn/generator.js');
+          loadScript('https://generatorjs.github.io/generatorjs.cdn/generatorWebHelper.js');
+        })
+        .catch(() => {
+          // If not accessible, load local scripts
+          console.log('Falling back to local scripts.');
+          loadScript('.generatorjs/generator.js');  
+          loadScript('.generatorjs/generatorWebHelper.js');  
+        })
+        // .finally(() => {
+        //   console.log("finally")
+        // //   window.$ = GeneratorJs()
+        // // $.init()
+        // // window.DEBUG = true
+        
+        window.$$ = GeneratorWebHelper()
+        
+        // });
+    </script>
+
+
+    <!-- MathJax -->
+  <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: false,
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3.0.0/es5/tex-mml-chtml.js">
+    </script>
+    
+    
+    
+    
+    
+    
+    
+</head>
+
+<body>
+    <div id="app" class="app">
+        <h1>Hi from HTML</h1>
+    </div>
+
+<!-- <script defer >setTimeout(load("script.js"),3000)</script> -->
+
+</body>
+
+</html>

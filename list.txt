@@ -1,6 +1,7 @@
 ./
-./jstricks
-./ToDo
-./markdown
-./.git
+./.dist
+./.jstricks
 ./calculator
+./markdown
+./try
+./ToDo
