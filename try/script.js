@@ -34,11 +34,13 @@ const loadSkelton =()=> {
     // )
 // //optionbar
   append(instructions,gen(div,"optionbar","","optionbar"))
+  append(optionbar,gen(span,'save',"Save","button",{onclick:"saveImage()"}))
   append(optionbar,gen(span,'try',"Try","button",{onclick:"updateOutput()"}))
   append(optionbar,gen(span,'init',"Init","button",{onclick:"initsetup()"}))
 
 
-  append(main, gen(section, "gridRoot", "", "gridRoot"));
+  append(main, gen(div, "saveCanvas", gen(h1,"","Learn GeneratorJS",'canvasHeading'), "save canvas"));
+  append(saveCanvas, gen(section, "gridRoot", "", "gridRoot"));
 
   var blocks = "beforehtml".split(",");
   blocks.forEach((block) => {
@@ -89,10 +91,10 @@ const loadSkelton =()=> {
   blocks.forEach((block) => {
     var id = block + "-block";
     append(gridRoot, gen(div, id, "", block + ",column"));
-    append(`#${id}`, gen(h3, "", "Test Render","block-heading"));
+    append(`#${id}`, gen(h3, "", "Render","block-heading"));
     append(
       `#${id}`,
-      gen(code, `${block}-code`, block, "code,scrolly", {
+      gen(div, `${block}-code`, block, "code,scrolly", {
         onchange: "updateOutput()",
         // contenteditable: "true",
       })
@@ -110,22 +112,23 @@ loadSkelton()
 
 
 
-function initsetup(beforestring= `<div id="testmain">Test Main Text<div>`,  codeString= `append("#testmain",gen("p","","hi"))`){
+function initsetup(beforestring= `<div id="testmain">Test Main Text</div>`,  codeString= `append("#testmain",gen("p","","hi"))`){
   // log(beforestring)
   
   append(`#beforehtml-code`,beforestring.replace(/</g, "\n&lt;").replace(/>/g, "&gt;\n").replace(/\n+/g, "\n").replace(/^\n/g, "\n"),'o')
   // append(`#testrender-code`,beforestring,'o')
+  
   append(`#jscode-code`,codeString,'o')
 
   append(`#afterhtml-code`,"",'o')
   var readbefore = grab(`#beforehtml-code`)[0].innerText
   append(`#output-code`,readbefore,"o")
 
-
+  // append("#testmain","Test Main Text","o"); 
 
 }
 
-var beforestring=`<div id="testmain">Test Main Text<div>`
+var beforestring=`<div id="testmain">Test Main Text</div>`
 var codeString = `append("#testmain",gen("p","","hi"))`
 
 
@@ -161,12 +164,17 @@ function updateOutput() {
 
 
 
-window.$$ = GeneratorWebHelper()
-$$.loadCopyright();
+
+function saveImage(){
+  // code to download #gridRoot as png;
+  console.log('pending export to png')
+}
 
 
 
-
-// append("#header",gen(header,"appheader","","header"),"r")
+append("#header",gen(header,"appheader","","header"),"r")
 
 load(["/defaults.js","/header.js"])
+window.$$ = GeneratorWebHelper()
+$$.PageNav().init()
+$$.loadCopyright();
