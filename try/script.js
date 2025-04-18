@@ -245,7 +245,7 @@ async function copyrightsloader(){
   setTimeout(()=>{
     
   var copyrightdiv= grab(`#copyright`)[0].outerHTML
-  append(copyright,"",'o')
+  append(`#copyright`,"",'o')
   append(saveCanvas,copyrightdiv)
 
   },3000)
