@@ -14,9 +14,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="">
     
-	<!-- <script src="../../generatorjs.cdn/generator.js"></script>
-	<script src="../../generatorjs.cdn/generatorWebHelper.js"></script>
-     -->
+
+
+    <script type="text/javascript" src="./html2canvas.min.js">
+    </script>
+    <!-- <script>
+      import html2canvas from 'htmltocanvas'
+    </script> -->
+    
+
    
      <script>
       // Function to dynamically load a script
@@ -34,24 +40,29 @@
           // If accessible, load remote scripts
           console.log('Remote scripts are available.');
           loadScript('https://generatorjs.github.io/generatorjs.cdn/generator.js');
-          loadScript('https://generatorjs.github.io/generatorjs.cdn/generatorWebHelper.js');
+          loadScript('https://geeratorjs.github.io/generatorjs.cdn/generatorWebHelper.js');
+          window.$ = GeneratorJs()
+          $.init()
         })
         .catch(() => {
           // If not accessible, load local scripts
           console.log('Falling back to local scripts.');
           loadScript('.generatorjs/generator.js');  
           loadScript('.generatorjs/generatorWebHelper.js');  
+          
+          
         })
-        // .finally(() => {
-        //   console.log("finally")
-        // //   window.$ = GeneratorJs()
-        // // $.init()
-        // // window.DEBUG = true
+        .finally(() => {
+          console.log("finally")
+          // window.$ = GeneratorJs()
+          
+          //  window.DEBUG = true
         
-        window.$$ = GeneratorWebHelper()
+          window.$$ = GeneratorWebHelper()
         
-        // });
+        });
     </script>
+
 
 
     <!-- MathJax -->

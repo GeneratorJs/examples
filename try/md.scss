@@ -80,12 +80,37 @@ ul{
 
 
 
-  .optionbar{
+  #optionbar{
+    width:minmax(100%,400px);
     padding-inline:1rem;
     display: flex;
     flex-wrap: wrap;
     gap:1em;
     flex-flow: row-reverse;
+
+     
+
+    .button{
+      margin: .5em;
+      font-size: .8em;
+      padding: .2em .6em !important;
+      
+      #fileName {
+        padding-inline: .4em;
+          border-radius:.2em;
+          display: inline;
+          margin: 0 auto;
+  
+  
+          &:hover{
+            background-color: hsl(calc(var(--hue,160) + 20), 100%, 18%);
+          }
+      }
+    }
+
+
+
+  
     
   }
   .gridRoot {
@@ -123,20 +148,20 @@ ul{
 .jscode .code{
   background-color: hsl(calc(var(--hue,160) + 120), 33%, 9%);
 
-blockquote{
-  padding:1em;
-  font-style: italic;
-}
+    blockquote{
+      padding:1em;
+      font-style: italic;
+    }
 
 
-p,div,img,svg,object{
-  max-width: 100%;
-  padding-block:1em;
-}
+    p,div,img,svg,object{
+      max-width: 100%;
+      padding-block:1em;
+    }
 
-table,ul,ol{
-  padding-block: 1em;
-}
+    table,ul,ol{
+      padding-block: 1em;
+    }
 
 }
 .column {
@@ -167,12 +192,6 @@ table,ul,ol{
 
 
 
-
-// .header{
-//   display: flex;
-//   flex-direction: column;
-//   justify-content: space-between;
-// }
 
 
 a{
@@ -206,7 +225,7 @@ a{
   background-color: hsl(var(--hue,160), 30%, 05%);
 
   *{
-    outline: 3px solid white;
+    border: 3px solid white;
     padding:3px;
     margin:3px;
   }
@@ -216,7 +235,14 @@ a{
 #saveCanvas{
   display: flex;
   flex-direction: column;
+  background-color: hsl(var(--hue,180), 100%, 10%);
   h1{
     margin-inline: auto;
+    padding:.3em;
+  }
+
+  #comment{
+    padding:1em;
+    margin: 0 auto;
   }
 }
