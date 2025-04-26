@@ -6,9 +6,9 @@
 }
 
 :root{
-  --hue:170;
+  --hue:260;
   --sat:90%;
-  --light:50%;
+  --light:40%;
   --fontFamily:"Roboto", sans-serif;
   --fontScale:1.2;
   --hueAscent:30;
@@ -17,7 +17,7 @@
 
 body {
   font-family: var(--fontFamily);
-  font-size: calc(1em * var(--fontScale));
+  font-size: calc(1rem * var(--fontScale));
   line-height: 1.2;
   color: #eee;
   background-color: #222;
@@ -52,11 +52,7 @@ body {
 .footer{
   display: block;
 }
-.header{
-  background-color: hsla(var(--hue), var(--sat,100%), var(--light,50%), 0.075);
 
-
-}
 
 .nav{
   padding:1rem;
@@ -94,6 +90,10 @@ ul{
       margin: .5em;
       font-size: .8em;
       padding: .2em .6em !important;
+      cursor: pointer;
+
+
+
       
       #fileName {
         padding-inline: .4em;
@@ -103,7 +103,11 @@ ul{
   
   
           &:hover{
-            background-color: hsl(calc(var(--hue,160) + 20), 100%, 18%);
+            background-color: hsl(var(--hue), 10%, 100%);
+            color:black;
+            font-style:italic;
+            font-weight: 100;
+            cursor: text;
           }
       }
     }
@@ -119,16 +123,17 @@ ul{
     height: 100%;
     max-height: 100%;
     background-color: hsla(var(--hueAscent,10), var(--satAscent,0%), 100%, 0.1);
-    // display: flex;
-    // flex-direction: column;
     display: grid;
-    // grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     grid-template-columns: 1fr 1fr;
+
+
     .block-heading {
       text-transform: capitalize;
       padding-inline: 1em;
       padding-block: .5em;
-      background-color: hsla(calc(var(--hue,160) ), var(--sat,100%), var(--light,50%), 0.562);
+      // background-color: hsla(calc(var(--hue,160) ), var(--sat,100%), var(--light,50%), 0.562);
+      background: hsla(calc(var(--hue) - 60), 70%, 40%, .4);
+      font-style:italic;
     }
 
     
@@ -136,6 +141,11 @@ ul{
 }
 
 .code {padding:1em;}
+
+.code,pre {
+  word-break: break-all;
+  word-wrap: break-word;
+}
 
 .beforehtml .code{
   background-color: hsl(calc(var(--hue) + 20), 100%, 6%);
@@ -204,15 +214,16 @@ a{
   padding:.5em;
   border-radius: .5em;
   box-shadow: 1px 1px 2px hsla(calc(var(--hue,160) + -140),50%,80%,.8);
-  background-color: aquamarine;
-  color:black;
+  background-color: hsl(calc(var(--hue,160) - 20), 60%, 55%);
+  background-color:hsla(calc(var(--hue) - 60), 70%, 40%, 1);
+  // color:black;
   margin-block: .5em;;
   flex-grow: 0;
   width: min-content;
   font-weight: bolder;
   transition: all 500ms ease-in-out;
   &:hover{
-    background-color: hsl(calc(var(--hue,160) + 20), 100%, 39%);
+    background-color: hsl(calc(var(--hue,160) - 20), 60%, 55%);
   }
 
 }
