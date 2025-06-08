@@ -1,4 +1,4 @@
-function GeneratorJs() {
+const GeneratorJs = () =>  {
     var self = {}
     self = (...args) => {
         console.log(args.length)

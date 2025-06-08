@@ -13,6 +13,9 @@
     <meta name="copyrights" content="mgeek.in">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="">
+    <script src = ".generatorjs/generator.js">
+
+    </script>
     
 	<!-- <script src="../../generatorjs.cdn/generator.js"></script>
 	<script src="../../generatorjs.cdn/generatorWebHelper.js"></script>
@@ -22,6 +25,7 @@
      <script>
       // Function to dynamically load a script
       function loadScript(src, isAsync = false, isDefer = false) {
+        console.log(`loading ${src}`)
         const script = document.createElement('script');
         script.src = src;
         if (isAsync) script.async = true;
@@ -35,7 +39,7 @@
           // If accessible, load remote scripts
           console.log('Remote scripts are available.');
           loadScript('https://generatorjs.github.io/generatorjs.cdn/generator.js');
-          loadScript('https://geeratorjs.github.io/generatorjs.cdn/generatorWebHelper.js');
+          loadScript('https://genratorjs.github.io/generatorjs.cdn/generatorWebHelper.js');
           window.$ = GeneratorJs()
           $.init()
         })
@@ -43,17 +47,15 @@
           // If not accessible, load local scripts
           console.log('Falling back to local scripts.');
           loadScript('.generatorjs/generator.js');  
-          loadScript('.generatorjs/generatorWebHelper.js');  
-          
-          
+          loadScript(".generatorjs/generatorWebHelper.js")          
         })
         .finally(() => {
           console.log("finally")
-          // window.$ = GeneratorJs()
+          window.$ = GeneratorJs()
+          //window.$$ = GeneratorWebHelper()
           
           //  window.DEBUG = true
         
-          window.$$ = GeneratorWebHelper()
         
         });
     </script>
@@ -87,14 +89,7 @@
     <div id="app" class="app">
         <h1>Hi from HTML</h1>
     </div>
-<!-- <script defer>
-        window.$ = GeneratorJs()
-        $.init()
-        window.DEBUG = true
-        
-        window.$$ = GeneratorWebHelper()
-        
-    </script> -->
+
 
 </body>
 
