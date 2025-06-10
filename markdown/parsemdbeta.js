@@ -1,200 +1,51 @@
-const blockCheck = [
-  //1. code
-  {
-    pattern: /^\s*```\w*/i,
-    type: 'code',
-    blockpattern: /^\s*```([^\n]*)\n([^`]*)```$/m,
-    renderpattern:/`{3}([^\n]*)\n([^`]*)`{3}/gmi
-  },
-
-  //2. html
-  {
-    //   pattern: /^\s*<(?!\/)([^>\s]*)[^>]*>.*?<\/\1>\s*$/mig,
-    pattern: /^\s*<(?!\/)([^>\s]*)[^>]*>/i,
-    type: 'html',
-    blockpattern: /^\s*<(?!\/)([^>\s]*)[^>]*>.*?<\/\1>\s*$/mis,
-    renderpattern: /^\s*<(?!\/)([^>\s]*)[^>]*>.*?<\/\1>\s*$/gmis
-  },
-
-  //3. htmlselfclosing
-  {
-    pattern: /<(br|hr|img|area|base|col|embed|input|link|meta|param|source|track|wbr)[^>]*?>/mi,
-    type: 'htmlselfclosing',
-    blockpattern: /<(br|hr|img|area|base|col|embed|input|link|meta|param|source|track|wbr)[^>]*?>/mi,
-    renderpattern: /<(br|hr|img|area|base|col|embed|input|link|meta|param|source|track|wbr)[^>]*?>/gmi
-  },
-  //4. heading
-  {
-    pattern: /^\s*#{1,6}\s+[^\n]*/i,
-    type: 'heading',
-    blockpattern: /^\s*#{1,6}\s+([^\n]*)$/im,
-    renderpattern: /^\s*([#]+)\s+([^\n]*)$/gmi,
-  },
-
-  //5. headinglined
-  {
-    pattern: /^\s*(\w[^\n]*)\n(-|=){4,}/i,
-    type: 'headinglined',
-    blockpattern: /^\s*(\w[^\n]*)\n(-|=){4,}/im,
-    renderpattern:/^\s*(\w[^\n]*)\n{0,1}((-|=){4,})/img
-  },
- 
-  //6. reference
-  {
-    pattern: /^\[[^\]]*\]:\s+[^\n]+/i,
-    type: 'reference',
-    blockpattern: /^\[[^\]]*\]:\s+.*$/mi,
-    renderpattern: /^\[[^\]]*\]:\s+.*$/mig
-  },
-
-  //7. blockquote
-  {
-    pattern: /^>\s+[^\n]+/i,
-    type: 'blockquote',
-    blockpattern: /^>\s+([^\n]*)/im,
-    renderpattern: /^>\s+([^\n]+)/igm
-  },
-
-  //8. subblockquote
-    {
-    pattern: /^((\s{4})+|\t+)>\s+([^\n]+)/i,
-    type: 'subblockquote',
-    blockpattern: /^((\s{4})+|\t+)>\s+([^\n]*)$/im,
-    renderpattern: /^((\s{4})+|\t+)>\s+([^\n]+)/img
-  },
-
-  //9. checkbox
-   {
-    pattern: /^\s*-\s+\[(\s*|[xX*])\]\s+/i,
-    type: 'checkbox',
-    blockpattern: /^\s*-\s+\[(\s*|[xX*])\]\s+([^\n]*)$/im,
-    renderpattern: /^\s*-\s+\[(\s*|[xX*])\]\s+([^\n]*)$/gim
-  },
-
-  //10. reference
-  {
-    pattern: /^\n+\-{3,}/i,
-    type: 'hr',
-    blockpattern: /^\n+\-{3,}$/im,
-    renderpattern: /^\n+\-{3,}$/img
-  },
-
-  //11. ol
-    {
-    pattern: /^(\*|-)\s+[^\n]+/i,
-    type: 'ul',
-    blockpattern: /^\s*(\*|-)\s+([^\n]*)$/im,
-    renderpattern:/^\s*(\*|-)\s+([^\n]*)$/im
-  },
-
-  //12. subol
-  {
-    pattern: /^((\s{4})+|\t+)(\*|-)\s+[^\n]+/i,
-    type: 'subul',
-    blockpattern: /^(\s+)(\*|-)\s+([^\n]*)$/im,
-    renderpattern: /^(\s+)(\*|-)\s+([^\n]*)$/img
-  },
-
-  //13. ol
-    {
-    pattern: /^\d+\.\s+[^\n]+/i,
-    type: 'listol',
-    blockpattern: /^\s*\d+\.\s+([^\n]*)$/im,
-    renderpattern: /^\s*\d+\.\s+([^\n]*)$/im
-  },
-
-  //14. subol
-  {
-    pattern: /^((\s{4})+|\t+)\d+\.\s+[^\n]+/i,
-    type: 'sublistol',
-    blockpattern: /^(\s+)\d+\.\s+([^\n]*)$/im,
-    renderpattern: /^(\s+)\d+\.\s+([^\n]*)$/im
-  },
-
-  //15. table
-  {
-    pattern: /^\s*\|(.|\n)*?\|\s*\n+/i,
-    type: 'table',
-    blockpattern: /^\|(.|\n)*?\|\s*\n+$/mi,
-  },
-
-  //16. paragraph
-  {
-    pattern: /^([^\n]+)/i,
-    type: 'paragraph',
-    blockpattern: /^([^\n]+)$/im,
-    renderpattern: /^([^\n]+)$/gim,
-  },
-
-   //17. math1
-  {
-    pattern: /^\s*\\\[.*(?<=(\\]))\s*$/im,
-    type: 'math1',
-    blockpattern: /^\s*\\\[(.*)(?<=(\\]))\s*$/im,
-  },
-
-  //18. math2
-  {
-    pattern: /^\s*\${2}.*(?<=\$\$)\s*/i,
-    type: 'math2',
-    blockpattern: /^\s*\${2}(.*)(?<=\$\$)\s*$/im,
-  }, 
-  //19. bolditalic
-  {
-    pattern: /^\s*([\w\d]+|(\*|_){1,3}[\w\d]+)[^\n]+$/im,
-    type: 'bolditalic',
-    blockpattern: /^\s*((\*|_){1,3}[\w\d]+|[\w\d]+)[^\n]+$/im,
-    renderpattern: /^\s*((\*|_){1,3}[\w\d]+|[\w\d]+)[^\n]+$/gim,
-  },
-  //20. link
-  //21. imagelink
-
-  {
-    pattern: /^\s*$/,
-    type: 'empty',
-    blockpattern: /^\s*$/,
-  },
-  {
-    pattern: /^\n*$/,
-    type: 'empty2',
-    blockpattern: /^\n*$/,
-  },
-  // {
-  //   pattern: /^.*\n*$/mi,
-  //   type: 'unknown',
-  //   blockpattern: /^.*\n*$/mi
-  // }
-
-];
+var blockPattern = {
+  code:/^```([^\n]*)\n([^`]*)```\s*\n*/mi,
+  html1:/^<(?!\/)([^>\s]*)[^>]*>[\s\S]*?<\/\1>/mi,
+  html2:/<(br|hr|img|area|base|col|embed|input|link|meta|param|source|track|wbr)[^\>]*?>\s*\n*/i,
+  heading1: /\A\s*\#{1,6}\s+([^\n]*)\n/i,
+  heading2: /\A\s*(\w[^\n]*)\n(-|\=){4,}/im,
+  block:/^>\s+([^\n]*)/i,
+  checklist:/(?:^\s*-\s+\[(?:\s*|[xX*])\]\s+[^\n]*\n?)+/m,
+  table:/(?:^\s*\|.*\|\s*\n?)+/m,
+  list:/(?m:^(?:\s*(?:\*|-|\d+\.)\s+[^\n]+)(?:\n|$))+/m,
+  reference:/^\n+\-{3,}$/im,
+  // paragraph:/^\s*[^\n]+(\s|\n)*/im,
+  paragraph:/\A[^\#\>]\s*[^\n]+(\s|\n)*/im,
+  empty:/^[\s\n]*/m,
+  unknown:/^.*\n*$/mi
+}
 
 
+var checkSequence = "code,html1,html2,heading1,heading2,block,checklist,list,reference,table,paragraph,empty,unknown".split(",")
 
+//identify blocks in sequence 
+// code,html,table,checkbox,list,blockquote,tab,else paragraph
 // takes teststring and compare starting  with blockCheck sequentially and return first match 
-const checkBlockType = (mdinput) => {
-  // log(`\nTestString: ${mdinput}`)
-
-  mdinput = mdinput.replace(/^\n+/m,"")
-
-
-  for(var i = 0; i<blockCheck.length; i++){
-  var block = blockCheck[i];
-    var compare = mdinput.match(block.pattern);
-    if (compare != null && compare.length > 0) {
-      var match = "";
-      var match = mdinput.match(block.blockpattern);
-      if (match != null && match.length > 0) {
-        var renderpattern = block.renderpattern;
-        var content = match[0]
-        contentLength = content.length
-        content = content.replace(/\n{2,}/,"\\n")
-        var unprocessed = mdinput.substr(content.length+1,mdinput.length).replace(/^\n+/,"")
-        // var unprocessed = mdinput.substr(content.length+1,mdinput.length)
-        res = [block.type,content,unprocessed,renderpattern]
-        return res
-      }
+const checkBlockTypeStage1 = (mdinput) => {
+  
+    console.log(`matching: ${mdinput.substr(0, 10)}`)
+  for(var i = 0; i<=checkSequence.length; i++){
+    var type = checkSequence[i];
+    var pattern = blockPattern[type];
+    if (pattern == null || pattern == undefined ){
+      console.log(`Pattern for ${type} not found`)
+      continue;
     }
-  }
 
+      // console.log(`matching: ${mdinput.substr(0, 10)} \nwith ${type}`)
+
+    var match = mdinput.match(pattern);
+    if (match != null && match.length > 0) {
+        var content = match[0]
+        var contentLength = content.length
+        var unprocessed = mdinput.substr(contentLength,mdinput.length)
+        console.log("MATCHED:",type,content)
+        console.log("\n\n")
+        var res = [type,content,unprocessed]
+        break
+    }   
+  }
+  return res
 }
 
 
@@ -203,283 +54,278 @@ const checkBlockType = (mdinput) => {
 
 
 const parsemdbeta = (mdinput, callback) => {
+  // mdinput = `${mdinput}\n`
 
   var checkboxno = grab("input").length
   
   //check mdinput with checkblocktype then return match and remove matched part from mdinput and repeat till mdinput length is zero
   var lex = []
 
-  function checkPartialBlockType(testmdinput) {
-    matchData = checkBlockType(testmdinput);
-    return matchData;
-    
-  }
 
 
   // identify block type and content
   while (mdinput.length > 0) {
-    var responseA = checkPartialBlockType(mdinput);
-    var content = responseA[1]
-    var type = responseA[0]
-    var unprocessed = responseA[2]
-    var renderpattern = responseA[3]
+    var responseA = checkBlockTypeStage1(mdinput);
+    if (responseA != null){
+      var type = responseA[0]
+      var content = responseA[1]
+      var unprocessed = responseA[2]
 
-    mdinput = unprocessed;
 
-    if (content.length > 0) {
-      lex.push({
-        type:type,
-        content:content,
-        // renderpattern:responseA[3],
-        render:render(content,renderpattern,type)
-        // unprocessed:mdinput
-        })
+      if (content.length > 0) {
+        
+        mdinput = unprocessed;
+        lex.push({
+          type:type,
+          content:content,
+          })
+      }
     }
   }
   console.log(JSON.parse(JSON.stringify(lex)))
 
-  function verb(input){
-    var E = document.createElement('div');
-    E.innerHTML = input;
-    return E.innerHTML.toString().replaceAll("&", '&amp;').replaceAll('</', '&lt;&#47;').replaceAll("<", "&lt;").replaceAll(">", '&gt;')
-  };
+  // function verb(input){
+  //   var E = document.createElement('div');
+  //   E.innerHTML = input;
+  //   return E.innerHTML.toString().replaceAll("&", '&amp;').replaceAll('</', '&lt;&#47;').replaceAll("<", "&lt;").replaceAll(">", '&gt;')
+  // };
 
 
-  function render(content,pattern,type) {
-    var renderedOutput = "";
+  // function render(content,pattern,type) {
+  //   var renderedOutput = "";
   
-    //1. code
-    if (type == 'code') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        var printcode = verb(p[2])
-          renderedOutput = `\n<pre><code class="${p[1]}, language-${p[1]},code-block">\n${printcode}</code></pre>`
-      });
-    }
+  //   //1. code
+  //   if (type == 'code') {
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       var printcode = verb(p[2])
+  //         renderedOutput = `\n<pre><code class="${p[1]}, language-${p[1]},code-block">\n${printcode}</code></pre>`
+  //     });
+  //   }
    
-    //2. html
-    else if (type == 'html') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        renderedOutput = `${p[0]}`
-      });
-    }
+  //   //2. html
+  //   else if (type == 'html') {
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       renderedOutput = `${p[0]}`
+  //     });
+  //   }
    
-    //3. htmlselfclosing
-    else if (type == 'htmlselfclosing') {
-      // log("htmlselfclosing")
-      var match1 = content.matchAll(pattern)
-      // log(match1)
-      var matchList = Array.from(match1)
-      // log(matchList)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        renderedOutput = `${p[0]}`
-      });
-    }
+  //   //3. htmlselfclosing
+  //   else if (type == 'htmlselfclosing') {
+  //     // log("htmlselfclosing")
+  //     var match1 = content.matchAll(pattern)
+  //     // log(match1)
+  //     var matchList = Array.from(match1)
+  //     // log(matchList)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       renderedOutput = `${p[0]}`
+  //     });
+  //   }
    
-    //4. heading
-    else if (type == 'heading') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      // log(matchList)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        renderedOutput = `<h${p[1].length}>${p[2]}</h${p[1].length}>`
-      });
-    }
+  //   //4. heading
+  //   else if (type == 'heading') {
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     // log(matchList)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       renderedOutput = `<h${p[1].length}>${p[2]}</h${p[1].length}>`
+  //     });
+  //   }
     
-    //5. headinglined
-    else if (type == 'headinglined') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        if (p[1].includes("=")) { htag="2" } else { htag="1" }
-        renderedOutput = `<h${htag}>${p[1]}</h${htag}>`
-      });
-    }  
+  //   //5. headinglined
+  //   else if (type == 'headinglined') {
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       if (p[1].includes("=")) { htag="2" } else { htag="1" }
+  //       renderedOutput = `<h${htag}>${p[1]}</h${htag}>`
+  //     });
+  //   }  
    
-    //6. reference
-    else if (type == 'reference') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        renderedOutput = `<p><a href="${p[0].replace(/^\[[^\]]*\]:\s+/,"")}" target="_blank">${p[0].replace(/^\[[^\]]*\]:\s+/,"")}</a></p>`       
-      });
-    }
+  //   //6. reference
+  //   else if (type == 'reference') {
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       renderedOutput = `<p><a href="${p[0].replace(/^\[[^\]]*\]:\s+/,"")}" target="_blank">${p[0].replace(/^\[[^\]]*\]:\s+/,"")}</a></p>`       
+  //     });
+  //   }
    
-    //7. blockquote
-    else if (type == 'blockquote') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        log(p[1])
-        renderedOutput = `<blockquote>${p[1]}</blockquote>`       
-      });
-    }
+  //   //7. blockquote
+  //   else if (type == 'blockquote') {
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       // log(p[1])
+  //       renderedOutput = `<blockquote>${p[1]}</blockquote>`       
+  //     });
+  //   }
    
-    //8. subblockquote
-    else if (type == 'subblockquote') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        renderedOutput = `<p><blockquote>${p[1]}</blockquote></p>`       
-      });
-    }
+  //   //8. subblockquote
+  //   else if (type == 'subblockquote') {
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       renderedOutput = `<p><blockquote>${p[1]}</blockquote></p>`       
+  //     });
+  //   }
     
-    //9. checkbox
-    else if (type == 'checkbox') {
-      checkboxno +=1;
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        var boxid =`parsedcheckbox${checkboxno}`
-        if ((p[1].length>0) ^ (p[1]!==" ")) { checked = ""} else { var checked = "checked" }
-        renderedOutput = `<input type="checkbox" id="${boxid}" name="${boxid}" value="${p[2]}" ${checked}>
-                          <label for="${boxid}"> ${p[2]}</label><br>`       
-      });
-    }
+  //   //9. checkbox
+  //   else if (type == 'checkbox') {
+  //     checkboxno +=1;
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       var boxid =`parsedcheckbox${checkboxno}`
+  //       if ((p[1].length>0) ^ (p[1]!==" ")) { checked = ""} else { var checked = "checked" }
+  //       renderedOutput = `<input type="checkbox" id="${boxid}" name="${boxid}" value="${p[2]}" ${checked}>
+  //                         <label for="${boxid}"> ${p[2]}</label><br>`       
+  //     });
+  //   }
     
-    //10. hr
-    else if (type == 'hr') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        renderedOutput = `<hr>`       
-      });
-    }
+  //   //10. hr
+  //   else if (type == 'hr') {
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       renderedOutput = `<hr>`       
+  //     });
+  //   }
     
-    //11. ol
-    else if (type == 'listol') {
-      checkboxno +=1;
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        var boxid =`parsedcheckbox${checkboxno}`
-        renderedOutput = `<ol><li>${p[1]}</li></ol>`       
-      });
-    }
+  //   //11. ol
+  //   else if (type == 'listol') {
+  //     checkboxno +=1;
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       var boxid =`parsedcheckbox${checkboxno}`
+  //       renderedOutput = `<ol><li>${p[1]}</li></ol>`       
+  //     });
+  //   }
     
-    //12. subol
-    else if (type == 'sublistol') {
-      checkboxno +=1;
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        var boxid =`parsedcheckbox${checkboxno}`
-        renderedOutput = `<ol class="sub"><li>${p[1]}</li></ol>`       
-      });
-    }
+  //   //12. subol
+  //   else if (type == 'sublistol') {
+  //     checkboxno +=1;
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       var boxid =`parsedcheckbox${checkboxno}`
+  //       renderedOutput = `<ol class="sub"><li>${p[1]}</li></ol>`       
+  //     });
+  //   }
     
-    //13. ul
-    else if (type == 'ul') {
-      checkboxno +=1;
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        var boxid =`parsedcheckbox${checkboxno}`
-        renderedOutput = `<ul><li>${p[2]}</li></ul>`       
-      });
-    }
+  //   //13. ul
+  //   else if (type == 'ul') {
+  //     checkboxno +=1;
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       var boxid =`parsedcheckbox${checkboxno}`
+  //       renderedOutput = `<ul><li>${p[2]}</li></ul>`       
+  //     });
+  //   }
     
-    //14. subul
-    else if (type == 'subul') {
-      checkboxno +=1;
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        var boxid =`parsedcheckbox${checkboxno}`
-        renderedOutput = `<ul class="sub"><li>${p[2]}</li></ul>`       
-      });
-    }
+  //   //14. subul
+  //   else if (type == 'subul') {
+  //     checkboxno +=1;
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       var boxid =`parsedcheckbox${checkboxno}`
+  //       renderedOutput = `<ul class="sub"><li>${p[2]}</li></ul>`       
+  //     });
+  //   }
     
-    //15. table    
+  //   //15. table    
     
-    //16. paragraph
-    else if (type == 'paragraph') {
-      checkboxno +=1;
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      var p = matchList[0]
-      renderedOutput = `<p>${p[1]}</p>`       
+  //   //16. paragraph
+  //   else if (type == 'paragraph') {
+  //     checkboxno +=1;
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     var p = matchList[0]
+  //     renderedOutput = `<p>${p[1]}</p>`       
       
-    }
+  //   }
 
-    // //17. math1
-    // else if (type == 'math2') {
-    //   var match1 = content.matchAll(pattern)
-    //   var matchList = Array.from(match1)
-    //   var renderedOutput = "";
-    //   matchList.forEach(p => {
-    //     renderedOutput = `<p><span class="math-inline">\\[${p[1]}\\]</span></p>`
-    //   });
-    // }
-    // //18. math2
-    // else if (type == 'math1') {
-    //   var match1 = content.matchAll(pattern)
-    //   var matchList = Array.from(match1)
-    //   var renderedOutput = "";
-    //   matchList.forEach(p => {
-    //     renderedOutput = `<p><span class="math-inline">\\[${p[1]}\\]</span></p>`
-    //   });
-    // }
+  //   // //17. math1
+  //   // else if (type == 'math2') {
+  //   //   var match1 = content.matchAll(pattern)
+  //   //   var matchList = Array.from(match1)
+  //   //   var renderedOutput = "";
+  //   //   matchList.forEach(p => {
+  //   //     renderedOutput = `<p><span class="math-inline">\\[${p[1]}\\]</span></p>`
+  //   //   });
+  //   // }
+  //   // //18. math2
+  //   // else if (type == 'math1') {
+  //   //   var match1 = content.matchAll(pattern)
+  //   //   var matchList = Array.from(match1)
+  //   //   var renderedOutput = "";
+  //   //   matchList.forEach(p => {
+  //   //     renderedOutput = `<p><span class="math-inline">\\[${p[1]}\\]</span></p>`
+  //   //   });
+  //   // }
 
-    //19. bolditalic
-    else if (type == 'bolditalic') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        if (p[1].length > 2) {
-          renderedOutput = `<strong><em>${p[2]}</em></strong>`
-        } else if (p[1].length == 2) {
-          renderedOutput = `<strong>${p[2]}</strong>`
-        } else {
-          renderedOutput = `<em>${p[2]}</em>`
-        }
-      });
-    }
+  //   //19. bolditalic
+  //   else if (type == 'bolditalic') {
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       if (p[1].length > 2) {
+  //         renderedOutput = `<strong><em>${p[2]}</em></strong>`
+  //       } else if (p[1].length == 2) {
+  //         renderedOutput = `<strong>${p[2]}</strong>`
+  //       } else {
+  //         renderedOutput = `<em>${p[2]}</em>`
+  //       }
+  //     });
+  //   }
 
-    //20. link
-    else if (type == 'link') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        renderedOutput = `<a href="${p[2]}">${p[1]}</a>`
-      });
-    }
+  //   //20. link
+  //   else if (type == 'link') {
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       renderedOutput = `<a href="${p[2]}">${p[1]}</a>`
+  //     });
+  //   }
 
-    //21. imagelink
-    else if (type == 'imagelink') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        renderedOutput = `<img src="${p[2]}" alt="${p[1]}">`
-      });
-    }
+  //   //21. imagelink
+  //   else if (type == 'imagelink') {
+  //     var match1 = content.matchAll(pattern)
+  //     var matchList = Array.from(match1)
+  //     var renderedOutput = "";
+  //     matchList.forEach(p => {
+  //       renderedOutput = `<img src="${p[2]}" alt="${p[1]}">`
+  //     });
+  //   }
 
-    //empty
+  //   //empty
     
-    return renderedOutput;
+  //   return renderedOutput;
   
-  }
+  // }
 
 
   // //render lex to html
@@ -521,19 +367,19 @@ const parsemdbeta = (mdinput, callback) => {
 
 
   // combine html and render
-  function combineRendered(lex, callback){
-    var joinedhtml = ""
-    for (var i = 0; i < lex.length; i++) {
-      joinedhtml += lex[i].rendered
-    }
-    return joinedhtml;
-  }
+  // function combineRendered(lex, callback){
+  //   var joinedhtml = ""
+  //   for (var i = 0; i < lex.length; i++) {
+  //     joinedhtml += lex[i].rendered
+  //   }
+  //   return joinedhtml;
+  // }
 
-  var renderedFinal = combineRendered(lex)
+  // var renderedFinal = combineRendered(lex)
 
 
-  //temp check
-  // append(`#preview-code`, renderedFinal)
+  // //temp check
+  // // append(`#preview-code`, renderedFinal)
 
 
   callback(renderedFinal)
