@@ -1,49 +1,69 @@
 var blockPattern = {
-  code:/^```([^\n]*)\n([^`]*)```\s*\n*/mi,
-  html1:/^<(?!\/)([^>\s]*)[^>]*>[\s\S]*?<\/\1>/mi,
+  code:/^\s*```([^\n]*)\n([^`]*)```[\s\n]*/mi,
+  // html1:/^\s*<(?!\/)([^>\s]*)[^>]*>[\s\S]*?<\/\1>[\s\n]*/mi,
+  html1:/^<(?!\/)([^>\s]*)[^>]*>[\s\S]*?<\/\1>[\s\n]*/mi,
   html2:/<(br|hr|img|area|base|col|embed|input|link|meta|param|source|track|wbr)[^\>]*?>\s*\n*/i,
-  heading1: /\A\s*\#{1,6}\s+([^\n]*)\n/i,
-  heading2: /\A\s*(\w[^\n]*)\n(-|\=){4,}/im,
-  block:/^>\s+([^\n]*)/i,
-  checklist:/(?:^\s*-\s+\[(?:\s*|[xX*])\]\s+[^\n]*\n?)+/m,
-  table:/(?:^\s*\|.*\|\s*\n?)+/m,
-  list:/(?m:^(?:\s*(?:\*|-|\d+\.)\s+[^\n]+)(?:\n|$))+/m,
+  // heading1: /^\s*\#{1,6}\s+([^\n]*)[\s\n]*/i,
+  // heading2: /^\s*(\w[^\n]*)\n(-|\=){4,}[\s\n]*/im,
+  heading1: /^\#{1,6}\s+([^\n]*)[\s\n]*/i,
+  heading2: /^(\w[^\n]*)\n(-|\=){4,}[\s\n]*/im,
+  block:/^^\s*>\s+([^\n]*)[\s\n]*/i,
+  checklist:/^\s*(?:^\s*-\s+\[(?:\s*|[xX*])\]\s+[^\n]*\n?)+/m,
+  table:/^\s*(?:^\s*\|.*\|\s*\n?)+/m,
+  list:/^\s*(?m:^(?:\s*(?:\*|-|\d+\.)\s+[^\n]+)(?:\n|$))+/m,
   reference:/^\n+\-{3,}$/im,
   // paragraph:/^\s*[^\n]+(\s|\n)*/im,
-  paragraph:/\A[^\#\>]\s*[^\n]+(\s|\n)*/im,
-  empty:/^[\s\n]*/m,
-  unknown:/^.*\n*$/mi
+  paragraph:/^(^[^-#|>\s][^\n]*(?:\n[^-#|>\s][^\n]*)*)/im,
+  empty:/^\s*[\s\n]*/m,
+  unknown:/^\s*.*\n*$/mi
 }
 
 
 var checkSequence = "code,html1,html2,heading1,heading2,block,checklist,list,reference,table,paragraph,empty,unknown".split(",")
 
+// var checkSequence = "code,html1,html2,heading1,heading2,block,checklist,list,reference,table,tab,paragraph,empty,unknown".split(",")
+
 //identify blocks in sequence 
 // code,html,table,checkbox,list,blockquote,tab,else paragraph
 // takes teststring and compare starting  with blockCheck sequentially and return first match 
 const checkBlockTypeStage1 = (mdinput) => {
+
+  function matchMarkdownBlock(text) {
+    for (const type of checkSequence) {
+      const regex = blockPattern[type];
+      const match = text.match(regex);
+      if (match && match.index === 0) { // Ensure match starts at beginning
+        return { type, match: match[0],unprocessed: text.slice(match[0].length) };
+      }
+    }
+    return { type: "unknown", match: "", unprocessed: text }; // Return unknown if no match found
+  }
+
+
   
     console.log(`matching: ${mdinput.substr(0, 10)}`)
   for(var i = 0; i<=checkSequence.length; i++){
     var type = checkSequence[i];
     var pattern = blockPattern[type];
+    res = matchMarkdownBlock(mdinput);
     if (pattern == null || pattern == undefined ){
-      console.log(`Pattern for ${type} not found`)
+      console.log(`Pattern for ${i+1 } ${type} not found`)
       continue;
     }
 
-      // console.log(`matching: ${mdinput.substr(0, 10)} \nwith ${type}`)
+    // console.log(`matching: ${mdinput.substr(0, 10)} \nwith ${type}`)
 
-    var match = mdinput.match(pattern);
-    if (match != null && match.length > 0) {
-        var content = match[0]
-        var contentLength = content.length
-        var unprocessed = mdinput.substr(contentLength,mdinput.length)
-        console.log("MATCHED:",type,content)
-        console.log("\n\n")
-        var res = [type,content,unprocessed]
-        break
-    }   
+    // var match = mdinput.match(pattern);
+    // if (match != null && match.length > 0) {
+    //     var content = match[0]
+    //     var contentLength = content.length
+    //     var unprocessed = mdinput.substr(contentLength,mdinput.length)
+    //     console.log("MATCHED:",type,content)
+    //     console.log("\n\n")
+    //     var res = [type,content,unprocessed]
+    //     break
+    // }   
+    
   }
   return res
 }
@@ -65,11 +85,11 @@ const parsemdbeta = (mdinput, callback) => {
 
   // identify block type and content
   while (mdinput.length > 0) {
-    var responseA = checkBlockTypeStage1(mdinput);
-    if (responseA != null){
-      var type = responseA[0]
-      var content = responseA[1]
-      var unprocessed = responseA[2]
+    var res = checkBlockTypeStage1(mdinput);
+    if (res != null){
+      var type = res.type;
+      var content = res.match;
+      var unprocessed = res.unprocessed;
 
 
       if (content.length > 0) {
@@ -82,6 +102,9 @@ const parsemdbeta = (mdinput, callback) => {
       }
     }
   }
+
+  // lex = lex.filter(o => o.type !== "empty" && o.type !== "unknown")
+  lex = lex.filter(o => o.type !== "empty")
   console.log(JSON.parse(JSON.stringify(lex)))
 
   // function verb(input){
