@@ -89,49 +89,89 @@ const coderender = (block) => {
   const match = block.match(pattern);
   if (match) {
     var matchArray =  Array.from(match)
-    var res = gens(code,"",gens(pre,"",matchArray[2],`lang-${matchArray[1]},${matchArray[1]}`))
-    console.log(res)
+    var res = gens(pre,"",gens(code,"",matchArray[2],`language-${matchArray[1]},${matchArray[1]}`))
+    // var res = `<pre><code class="language-${matchArray[1]},${matchArray[1]}">${matchArray[2]}</code></pre>`
     return res
   }
 }
 
-const tablerender = (block) => {
-  console.log("tableblock")
-  // var pattern=/^\s*```([^\n]*)\n([^`]*)```[\s\n]*/mi;
-  // const match = block.match(pattern);
-  // if (match) {
-  //   var matchArray =  Array.from(match)
-  //   var res = gens(code,"",gens(pre,"",matchArray[2],`lang-${matchArray[1]},${matchArray[1]}`))
-  //   console.log(res)
-  //   return res
-  // }
+const tablerender = (table) => {
+
+
+  var tableHeadBodySepratorPattern = /(^\|)(?=(:|-))([^\w\d\s]*?)(\|\s*$)/gm
+
+  var sep = table.matchAll(tableHeadBodySepratorPattern)
+
+  var sep = Array.from(sep)
+  if (sep.length > 0) {
+    var Sep = sep[0][0]
+
+    var alignment = Sep.substr(1, Sep.length - 2)
+    alignment = alignment.replaceAll(":---:", "center").replaceAll(":---", "left").replaceAll("---:", "right").replaceAll("---", "justify")
+    alignment = alignment.split("|")
+    var T = table.split(Sep)
+    var thead = T[0]
+    var tbody = T[1]
+    thead = `\n\t<thead>${tableRowsParser(thead, alignment)}\n</thead>`
+    tbody = `\n\t<tbody>${tableRowsParser(tbody, alignment)}\n</tbody>`
+  }
+  else {
+    var alignment = null
+    var thead = ""
+    var tbody = `\n\t<tbody>${tableRowsParser(table, alignment)}\n</tbody>`
+  }
+  // tableRow
+  function tableRowsParser(table, alignment = null) {
+    // https://regex101.com/r/zRBXEm/1
+    var tableRowPattern = /(^\|)(?!(:|-))([^\n]*?)(\|\s*$)/gm
+    var rows = table.matchAll(tableRowPattern)
+    rowsList = Array.from(rows)
+    rowsList.forEach(Row => {
+      if (alignment == null) {
+        alignment = []
+        for (i = 0; i < Row[3].split("|").length; i++) {
+          alignment.push("center")
+        }
+      }
+
+
+
+
+      var R = RowParser(Row[3], alignment)
+      table = table.replaceAll(Row[0], R)
+    })
+    return table
+  }
+
+  function RowParser(Row, alignment) {
+    var parsedRow = ""
+    var Col = Row.split("|")
+    Col.forEach((cell, i) => {
+      parsedRow = parsedRow + `<td class='${alignment[i]}'>${cell}</td>`
+    })
+    parsedRow = `\n\t<tr>\n\t${parsedRow}\n</tr>\n`
+    return parsedRow
+  }
+
+
+  var table = `\n<table class="parse-md-table">${thead}\n${tbody}\n</table>`
+  // return table
+  return textformat(table)
 }
 
-const listrender = (block) => {
-  console.log("listblock")
-  // var pattern=/^\s*```([^\n]*)\n([^`]*)```[\s\n]*/mi;
-  // const match = block.match(pattern);
-  // if (match) {
-  //   var matchArray =  Array.from(match)
-  //   var res = gens(code,"",gens(pre,"",matchArray[2],`lang-${matchArray[1]},${matchArray[1]}`))
-  //   console.log(res)
-  //   return res
-  // }
-}
+
 const blockquoterender = (block) => {
-  console.log("blockquoteblock")
   var pattern= /^^\s*>\s+([^\n]*)[\s\n]*/i;
   const match = block.match(pattern);
   if (match) {
     var matchArray =  Array.from(match)
-    var res = gens(blockquote,"",matchArray[1])
-    console.log(res)
-    return res
+    var res = gens("blockquote","",matchArray[1])
+    return textformat(res)
   }
 }
 
 const tabrender = (block) => {
-  console.log("tabblock")
+  // console.log("tabblock")
   // var pattern=/^\s*```([^\n]*)\n([^`]*)```[\s\n]*/mi;
   // const match = block.match(pattern);
   // if (match) {
@@ -143,16 +183,297 @@ const tabrender = (block) => {
 }
 
 const paragraphrender = (block) => {
-  console.log("tabblock")
   var pattern=/^(^[^-#|>\s][^\n]*(?:\n[^-#|>\s][^\n]*)*)/im;
   const match = block.match(pattern);
+
+  
+
+  function processIndentedLines(text) {
+    return text
+      .split('\n')  // Split into lines
+      .map(line => {
+        // Check if line starts with tab or 4+ spaces
+        if (/^(\t| {4,})/.test(line)) {
+          return `<span class="tab">${line}</span>`;
+        }
+        return line;
+      })
+      .join('\n')  // Join back with line breaks
+      .replaceAll(/\n{2,}/g, '<br>')  // Convert remaining line breaks to <br>
+      .replaceAll(/\s{2,}$/g, '<br>')
+  }
+
+
   if (match) {
     var matchArray =  Array.from(match)
-    var res = gens(p,"",matchArray[1])
-    console.log(res)
+    var paratext = processIndentedLines(matchArray[1])
+    var formatted = textformat(paratext)
+    var res = gens(p,"",formatted)
     return res
   }
 }
+
+
+
+const heading1render = (block) => {
+  var pattern=/^(\#{1,6})\s+([^\n]*)[\s\n]*/i;
+  const match = block.match(pattern);
+  if (match) {
+    var matchArray =  Array.from(match)
+    var res = `<h${matchArray[1].length+1}>${matchArray[2]}</h${matchArray[1].length+1}>`
+    return textformat(res)
+  }
+}
+
+const heading2render = (block) => {
+  var pattern=/^(\w[^\n]*)\n((-|\=){4,})[\s\n]*/im;
+  const match = block.match(pattern);
+  if (match) {
+    var matchArray =  Array.from(match)
+    if (matchArray[2][2] == "-") var htype=1
+    else if (matchArray[2][2] == "=") var htype=2
+    var res = `<h${htype}>${matchArray[1]}</h${htype}>`
+
+    return textformat(res)
+  }
+}
+
+
+const listrender = (md) => {
+  // listBlockUnordered
+              // https://regex101.com/r/5rGpdT/1
+              var listBlockPattern = /(^ *(\*|-)\s+[^\n]*){1,}/gmi
+              match1 = md.matchAll(listBlockPattern)
+              matchList = Array.from(match1)
+              matchList.forEach(p => {
+                  var block = p[0]
+                  // listBlock
+                  // https://regex101.com/r/G1T1QW/1
+                  var listPattern = /^(\*|-)\s+([^\n]*)$/gmi
+                  list = block.matchAll(listPattern)
+                  listEntry = Array.from(list)
+                  listEntry.forEach(li => {
+                      block = block.replaceAll(li[0], `\n\t<li>${li[2]}</li> `)
+                  })
+
+                  // sublistBlock
+                  // https://regex101.com/r/DYvI2z/1
+                  var sublistPattern = /^ +(\*|-)\s+([^\n]*)$/gmi
+                  list = block.matchAll(sublistPattern)
+                  listEntry = Array.from(list)
+                  listEntry.forEach(li => {
+                      block = block.replaceAll(li[0], `\n<ul>\n\t<li>${li[1]}</li></ul>`)
+                  })
+
+                  md = md.replaceAll(p[0], `\n<ul>${block}</ul>`)
+              })
+
+
+
+
+              // listBlockOrdered
+              // https://regex101.com/r/9ydKmi/1
+              var listBlockPatternOl = /(^ *\d+.\s+[^\n]*){1,}/gmi
+              match1 = md.matchAll(listBlockPatternOl)
+              matchList = Array.from(match1)
+              matchList.forEach(p => {
+                  var block = p[0]
+                  // listOrdered
+                  // https://regex101.com/r/03ju1y/1
+                  var listPatternOl = /^\d+. +([^\n]*)$/gmi
+                  list = block.matchAll(listPatternOl)
+                  listEntry = Array.from(list)
+                  listEntry.forEach(li => {
+                      block = block.replaceAll(li[0], `\n<li>${li[1]}</li>`)
+                  })
+
+                  // sublistBlock
+                  // https://regex101.com/r/8OuyuF/1
+                  var sublistPattern = /^ +\d+. +([^\n]*)$/gmi
+                  list = block.matchAll(sublistPattern)
+                  listEntry = Array.from(list)
+                  listEntry.forEach(li => {
+                      block = block.replaceAll(li[0], `\n<ul>\n\t<li>${li[1]}</li></ul>`)
+                  })
+
+
+                  // md = md.replaceAll(p[0], `<ol>${block}</ol>`)
+                  md = md.replaceAll(p[0], "\n" + htmltostring(gen("ol", "", block, 'parse-md-ol')))
+              })
+
+              md.replace(/<\/ol>\n<ol>/m,"")
+              log(md)
+              //.replaceAll(/<\/ol>[\s\n]*<ol>/gm,"")
+  return textformat(md)            
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+const textformat = (md) => {
+
+  var inlinecodePattern=/(?<!`)`([^`]*?)`(?!`)/gmi;
+  match1 = md.matchAll(inlinecodePattern)
+  matchList = Array.from(match1)
+  matchList.forEach(p => {
+      md = md.replaceAll(p[0], `<code class='parsemd-code code-inline'>${p[1]}</code>`)
+  })
+
+
+  // // blockMath
+  //https://regex101.com/r/QdJcQS/1
+  var blockMathPattern = /\${2}([^$\n]+)\${2}/gm
+  match1 = md.matchAll(blockMathPattern)
+  matchList = Array.from(match1)
+  matchList.forEach(p => {
+      // log(p)
+      md = md.replaceAll(p[0], `\\[ ${p[1]} \\]`)
+  })
+
+
+  // // inlineMath
+  //https://regex101.com/r/QdJcQS/1
+  // var inlineMathPattern = /(?<!\$)\$([^$\n]+)\$(?!\$)/gm
+  var inlineMathPattern = /(?<!\$)\$([^$\n]+)\$(?!\$)/mg;
+
+  match1 = md.matchAll(inlineMathPattern)
+  matchList = Array.from(match1)
+  matchList.forEach(p => {
+      // log(p)
+      md = md.replaceAll(p[0], `\\( ${p[1]} \\)`)
+  })
+
+
+
+  // // imageurl
+             // https://regex101.com/r/EXVZcK/1
+             
+             var imageUrlPattern = /!\[([^\]]*)]\("?([^\)"']*)"?\)/gm
+             match1 = md.matchAll(imageUrlPattern)
+             matchList = Array.from(match1)
+             matchList.forEach(p => {
+                 //               console.log(p)
+                 md = md.replaceAll(p[0], `\n<img src="${p[2]}" alt="${p[1]}" />`)
+
+             })
+
+             // // link
+             // https://regex101.com/r/APBkU8/1
+             // var linkPattern = /[^!]\[([^\]]*)\]\(([^\)]*)\)/gmi
+             var linkPattern = /(?<!!)\[([^\]]*)\]\(([^\)]*)\)/gmi
+             
+             match1 = md.matchAll(linkPattern)
+             matchList = Array.from(match1)
+             matchList.forEach(p => {
+                 //                    log(p)
+                 md = md.replaceAll(p[0], `<a href="${p[2]}">${p[1]}</a>`)
+
+             })
+
+
+             // // bold/italic/emph
+             // https://regex101.com/r/3GWtGB/1
+             var italicPattern = /(?<=\W+)((\*|_){1,3})(\S[^\*_\n]+?\S)\1(?=\W)/gmi
+             // var italicPattern = /([\s]+)((\*|_){1,3})([^\*_\n]+?)\1(?=\W)/gmi
+             match1 = md.matchAll(italicPattern)
+             matchList = Array.from(match1)
+             matchList.forEach(p => {
+                 if (p[1].length == 3) {
+                     md = md.replaceAll(p[0], `<em><strong>${p[3]}</strong></em>`)
+                 }
+                 if (p[1].length == 2) {
+                     md = md.replaceAll(p[0], `<strong>${p[3]}</strong>`)
+                 }
+                 if (p[1].length == 1) {
+                     md = md.replaceAll(p[0], `<em>${p[3]}</em>`)
+                 }
+             })
+
+             // // strikethrough
+             // https://regex101.com/r/MLsQRh/1
+             var strikethroughPattern = /~~(.*)~~/igm
+             // var strikethroughPattern =/~~([\s\S]*?)~~/gm;
+             match1 = md.matchAll(strikethroughPattern)
+             matchList = Array.from(match1)
+             matchList.forEach(p => {
+                 md = md.replace(p[0], `<del class='parsedmd-del'>${p[1]} </del>`)
+             })
+
+
+
+            // reference
+            https://regex101.com/r/eLzXSC/1                                 
+            var referencelinkPattern = /(?<!!)\[([^\]]*)\]\s{0,3}\[([^\]]*)\]/gmi
+            
+            match1 = md.matchAll(referencelinkPattern)
+            matchList = Array.from(match1)
+            matchList.forEach(p => {
+                //                    log(p)
+                md = md.replaceAll(p[0], `<a href="#${p[2]}">${p[1]}</a>`)
+
+            })
+
+              // Blockreferencelist
+                // https://regex101.com/r/xu97SN/1
+                var listBlockPattern = /(^ *(\[[^\]]*\]:)\s+[^\n]*){1,}/gmi
+                match1 = md.matchAll(listBlockPattern)
+                matchList = Array.from(match1)
+                matchList.forEach(p => {
+                    var block = p[0]
+                    // referencelistBlock
+                    // https://regex101.com/r/JC0xSx/1
+                    var listPattern = /^\[([^\]]*)\]:\s+([^\n]*)$/gmi
+                    list = block.matchAll(listPattern)
+                    listEntry = Array.from(list)
+                    listEntry.forEach(li => {
+                        block = block.replaceAll(li[0], `\n\t<span id="${li[1]}">${li[2]}</span> `)
+                    })
+
+                    // subreferencelist
+                    // https://regex101.com/r/DYvI2z/1
+                    var sublistPattern = /^ +(\*|-)\s+([^\n]*)$/gmi
+                    list = block.matchAll(sublistPattern)
+                    listEntry = Array.from(list)
+                    listEntry.forEach(li => {
+//                        block = block.replaceAll(li[0], `\n<ul>\n\t<li>${li[1]}</li></ul>`) trying sub list
+                        block = block.replaceAll(li[0], `\n<ul>\n\t<li>${li[2]}</li></ul>`)
+                    })
+
+                    // md = md.replaceAll(p[0], `\n<ul>${block}</ul>`)
+                    md = md.replaceAll(p[0], `\n${block}`)
+                })
+  return md
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 const parsemdbeta = (mdinput, callback) => {
@@ -200,14 +521,14 @@ const parsemdbeta = (mdinput, callback) => {
     }
     //rendertable
     else if (block.type == "table"){
-      // var rend = tablerender(block.content)
+      var rend = tablerender(block.content)
     }
     //renderlist
     else if (block.type == "list"){
-      // var rend = listrender(block.content)
+      var rend = listrender(block.content)
     }
     //renderblockquote
-    else if (block.type == "blockquote"){
+    else if (block.type == "block" || block.type == "blockquote"){
       var rend = blockquoterender(block.content)
     }
     //rendertab
@@ -218,10 +539,22 @@ const parsemdbeta = (mdinput, callback) => {
     else if (block.type == "paragraph"){
       var rend = paragraphrender(block.content)
     }
+    else if (block.type == "heading1"){
+      var rend = heading1render(block.content)
+    }
+    else if (block.type == "heading2"){
+      var rend = heading2render(block.content)
+    }
 
     lex[j].render1 = rend
   }
-    
+
+  var rend1join = ""
+
+  
+  for(var j =0; j<lex.length;j++){
+    rend1join = `${rend1join}${lex[j].render1}`
+  }
     
   
 
@@ -234,8 +567,8 @@ const parsemdbeta = (mdinput, callback) => {
 
 
 
-  callback(renderedFinal)
-  return renderedFinal;
+  callback(rend1join)
+  return rend1join;
 
   
 }
