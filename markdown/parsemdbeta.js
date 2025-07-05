@@ -1,272 +1,550 @@
-const blockCheck = [
-  {
-    pattern: /^\s*```\w*/i,
-    type: 'code',
-    blockpattern: /^\s*```([^\n]*)\n([^`]*)```$/m,
-    renderpattern:/`{3}([^\n]*)\n([^`]*)`{3}/gmi
-  },
-  {
-    //   pattern: /^\s*<(?!\/)([^>\s]*)[^>]*>.*?<\/\1>\s*$/mig,
-    pattern: /^\s*<(?!\/)([^>\s]*)[^>]*>/i,
-    type: 'html',
-    blockpattern: /^\s*<(?!\/)([^>\s]*)[^>]*>.*?<\/\1>\s*$/mis,
-    renderpattern: /^\s*<(?!\/)([^>\s]*)[^>]*>.*?<\/\1>\s*$/gmis,
-  },
-  {
-    pattern: /<(br|hr|img|area|base|col|embed|input|link|meta|param|source|track|wbr)[^>]*?>/mi,
-    type: 'htmlselfclosing',
-    blockpattern: /<(br|hr|img|area|base|col|embed|input|link|meta|param|source|track|wbr)[^>]*?>/mi,
-    renderpattern: /<(br|hr|img|area|base|col|embed|input|link|meta|param|source|track|wbr)[^>]*?>/gmi,
-  },
-  {
-    pattern: /^\s*(\w[^\n]*)\n(-|=){4,}/im,
-    type: 'headinglined',
-    blockpattern: /^\s*(\w[^\n]*)\n(-|=){4,}/im,
-    renderpattern:/^\s*(\w[^\n]*)\n((-|=){4,})/img,
-  },
-  {
-    pattern: /^\s*#{1,6}\s+([^\n]*)$/im,
-    type: 'heading',
-    blockpattern: /^\s*#{1,6}\s+([^\n]*)$/im,
-    renderpattern: /^\s*([#]+)\s+([^\n]*)$/gmi,
-  },
-  {
-    pattern: /^\s*-\s+\[(\s+|[xX*])\]\s+/im,
-    type: 'checkbox',
-    blockpattern: /^\s*-\s+\[(\s+|[xX*])\]\s+([^\n]*)$/im,
-  },
-  {
-    pattern: /^(\*|\d+\.|-)\s+/im,
-    type: 'list',
-    blockpattern: /^\s*(\*|\d+\.|-)\s+([^\n]*)$/im,
-  },
-  {
-    pattern: /^\s*(\*|\d+\.|-)\s+/im,
-    type: 'sublist',
-    blockpattern: /^\s*(\*|\d+\.|-)\s+([^\n]*)$/im,
-  },
-  {
-    pattern: /\[[^\]]*\]:\s+.*$/mi,
-    type: 'reference',
-    blockpattern: /\[[^\]]*\]:\s+.*$/mi,
-  },
-  {
-    pattern: /^\s*>\s+([^\n]*)$/im,
-    type: 'blockquote',
-    blockpattern: /^\s*>\s+([^\n]*)$/im,
-  },
-  {
-    pattern: /^\n+\-{3,}$/im,
-    type: 'hr',
-    blockpattern: /^\n+\-{3,}$/im,
-  },
-  {
-    pattern: /^\s*\|/im,
-    type: 'table',
-    blockpattern: /^\|(.|\n)*?\|\s*\n+$/mi,
-  },
-  {
-    pattern: /^\s*\${2}.*(?<=\$\$)\s*$/im,
-    type: 'math2',
-    blockpattern: /^\s*\${2}(.*)(?<=\$\$)\s*$/im,
-  }, {
-    pattern: /^\s*\\\[.*(?<=(\\]))\s*$/im,
-    type: 'math1',
-    blockpattern: /^\s*\\\[(.*)(?<=(\\]))\s*$/im,
-  },
-  {
-    pattern: /^\s*([\w\d]+|(\*|_){1,3}[\w\d]+)[^\n]+$/im,
-    type: 'paragraph',
-    blockpattern: /^\s*((\*|_){1,3}[\w\d]+|[\w\d]+)[^\n]+$/im,
-  },
-  {
-    pattern: /^\s*$/,
-    type: 'empty',
-    blockpattern: /^\s*$/,
-  },
-  // {
-  //   pattern: /^.*\n*$/mi,
-  //   type: 'unknown',
-  //   blockpattern: /^.*\n*$/mi
-  // }
+//parsemdbeta start
+const parsemdbeta = (mdinput, callback) => {
 
-];
-
-
-
-// takes teststring and compare starting  with blockCheck sequentially and return first match 
-const checkBlockType = (mdinput) => {
-  // log(`\nTestString: ${mdinput}`)
-
-
-  for(var i = 0; i<blockCheck.length; i++){
-  var block = blockCheck[i];
-    var compare = mdinput.match(block.pattern);
-    if (compare != null && compare.length > 0) {
-      var match = "";
-      var match = mdinput.match(block.blockpattern);
-      if (match != null && match.length > 0) {
-        // log("Detected " + block.type + "\nContent:\n " + match[0] + "\n\n");
-        return { type: block.type, content: match[0]}
-      }
-    }
+  //subfunctions start
+  var blockPattern = {
+      code: /^\s*```([^\n]*)\n([^`]*)```[\s\n]*/mi,
+      // html1:/^\s*<(?!\/)([^>\s]*)[^>]*>[\s\S]*?<\/\1>[\s\n]*/mi,
+      html1: /^<(?!\/)([^>\s]*)[^>]*>[\s\S]*?<\/\1>[\s\n]*/mi,
+      html2: /<(br|hr|img|area|base|col|embed|input|link|meta|param|source|track|wbr)[^\>]*?>\s*\n*/i,
+      // heading1: /^\s*\#{1,6}\s+([^\n]*)[\s\n]*/i,
+      // heading2: /^\s*(\w[^\n]*)\n(-|\=){4,}[\s\n]*/im,
+      heading1: /^\#{1,6}\s+([^\n]*)[\s\n]*/i,
+      heading2: /^(\w[^\n]*)\n(-|\=){4,}[\s\n]*/im,
+      block: /^^\s*>\s+([^\n]*)[\s\n]*/i,
+      checklist: /^\s*(?:^\s*-\s+\[(?:\s*|[xX*])\]\s+[^\n]*\n?)+/m,
+      table: /^\s*(?:^\s*\|.*\|\s*\n?)+/m,
+      list: /^\s*(?m:^(?:\s*(?:\*|-|\d+\.)\s+[^\n]+)(?:\n|$))+/m,
+      reference: /^\n+\-{3,}$/im,
+      // paragraph:/^\s*[^\n]+(\s|\n)*/im,
+      paragraph: /^(^[^-#|>\s][^\n]*(?:\n[^-#|>\s][^\n]*)*)/im,
+      empty: /^\s*[\s\n]*/m,
+      unknown: /^\s*.*\n*$/mi
   }
 
-}
+
+  var checkSequence = "code,html1,html2,heading1,heading2,block,checklist,list,reference,table,paragraph,empty,unknown".split(",")
+
+
+  const checkBlockTypeStage1 = (mdinput) => {
+
+      function matchMarkdownBlock(text) {
+          for (const type of checkSequence) {
+              const regex = blockPattern[type];
+              const match = text.match(regex);
+              if (match && match.index === 0) { // Ensure match starts at beginning
+                  return { type, match: match[0], unprocessed: text.slice(match[0].length) };
+              }
+          }
+          return { type: "unknown", match: "", unprocessed: text }; // Return unknown if no match found
+      }
 
 
 
+      for (var i = 0; i <= checkSequence.length; i++) {
+          var type = checkSequence[i];
+          var pattern = blockPattern[type];
+          res = matchMarkdownBlock(mdinput);
+          if (pattern == null || pattern == undefined) {
+              continue;
+          }
+      }
+      return res
+  }
+
+  const renderpattern = {
+      code: /^\s*```([^\n]*)\n([^`]*)```[\s\n]*/mi,
+      heading1: /^\#{1,6}\s+([^\n]*)[\s\n]*/i,
+      heading2: /^(\w[^\n]*)\n(-|\=){4,}[\s\n]*/im,
+      block: /^^\s*>\s+([^\n]*)[\s\n]*/i,
+      checklist: /^\s*(?:^\s*-\s+\[(?:\s*|[xX*])\]\s+[^\n]*\n?)+/m,
+      table: /^\s*(?:^\s*\|.*\|\s*\n?)+/m,
+      list: /^\s*(?m:^(?:\s*(?:\*|-|\d+\.)\s+[^\n]+)(?:\n|$))+/m,
+      reference: /^\n+\-{3,}$/im,
+      paragraph: /^(^[^-#|>\s][^\n]*(?:\n[^-#|>\s][^\n]*)*)/im,
+
+  }
 
 
 
-const parsemdbeta = (mdinput, callback) => {
+  const coderender = (block) => {
+      var pattern = /^\s*```([^\n]*)\n([^`]*)```[\s\n]*/mi;
+      const match = block.match(pattern);
+      if (match) {
+          var matchArray = Array.from(match)
+          var res = gens(pre, "", gens(code, "", matchArray[2], `language-${matchArray[1]},${matchArray[1]},code-block`))
+          return res
+      }
+  }
+
+  const tablerender = (table) => {
+
+
+      var tableHeadBodySepratorPattern = /(^\|)(?=(:|-))([^\w\d\s]*?)(\|\s*$)/gm
+      var sep = table.matchAll(tableHeadBodySepratorPattern)
+      var sep = Array.from(sep)
+      if (sep.length > 0) {
+          var Sep = sep[0][0]
+          var alignment = Sep.substr(1, Sep.length - 2)
+          alignment = alignment.replaceAll(":---:", "center").replaceAll(":---", "left").replaceAll("---:", "right").replaceAll("---", "justify")
+          alignment = alignment.split("|")
+          var T = table.split(Sep)
+          var thead = T[0]
+          var tbody = T[1]
+          thead = `\n\t<thead>${tableRowsParser(thead, alignment)}\n</thead>`
+          tbody = `\n\t<tbody>${tableRowsParser(tbody, alignment)}\n</tbody>`
+      }
+      else {
+          var alignment = null
+          var thead = ""
+          var tbody = `\n\t<tbody>${tableRowsParser(table, alignment)}\n</tbody>`
+      }
+      // tableRow
+      function tableRowsParser(table, alignment = null) {
+          // https://regex101.com/r/zRBXEm/1
+          var tableRowPattern = /(^\|)(?!(:|-))([^\n]*?)(\|\s*$)/gm
+          var rows = table.matchAll(tableRowPattern)
+          rowsList = Array.from(rows)
+          rowsList.forEach(Row => {
+              if (alignment == null) {
+                  alignment = []
+                  for (i = 0; i < Row[3].split("|").length; i++) {
+                      alignment.push("center")
+                  }
+              }
+
+              var R = RowParser(Row[3], alignment)
+              table = table.replaceAll(Row[0], R)
+          })
+          return table
+      }
+
+      function RowParser(Row, alignment) {
+          var parsedRow = ""
+          var Col = Row.split("|")
+          Col.forEach((cell, i) => {
+              parsedRow = parsedRow + `<td class='${alignment[i]}'>${cell}</td>`
+          })
+          parsedRow = `\n\t<tr>\n\t${parsedRow}\n</tr>\n`
+          return parsedRow
+      }
+
+
+      var table = `\n<table class="parse-md-table">${thead}\n${tbody}\n</table>`
+      return textformat(table)
+  }
+
+
+  const blockquoterender = (block) => {
+      var pattern = /^^\s*>\s+([^\n]*)[\s\n]*/i;
+      const match = block.match(pattern);
+      if (match) {
+
+          var matchArray = Array.from(match)
+          var res = gens("blockquote", "", matchArray[1])
+          return textformat(res)
+      }
+  }
+
+  const paragraphrender = (block) => {
+      var pattern = /^(^[^-#|>\s][^\n]*(?:\n[^-#|>\s][^\n]*)*)/im;
+      const match = block.match(pattern);
+
+
+
+      function processIndentedLines(text) {
+          return text
+              .split('\n')  // Split into lines
+              .map(line => {
+                  // Check if line starts with tab or 4+ spaces
+                  if (/^(\t| {4,})/.test(line)) {
+                      return `<span class="tab">${line}</span>`;
+                  }
+                  return line;
+              })
+              .join('\n')  // Join back with line breaks
+              .replaceAll(/\n{2,}/g, '<br>')  // Convert remaining line breaks to <br>
+              .replaceAll(/\s{2,}$/g, '<br>')
+      }
+
+
+      if (match) {
+          var matchArray = Array.from(match)
+          var paratext = processIndentedLines(matchArray[1])
+          var formatted = textformat(paratext)
+          var res = gens(p, "", formatted)
+          return res
+
+      }
+  }
+
+
+
+  const heading1render = (block) => {
+      var pattern = /^(\#{1,6})\s+([^\n]*)[\s\n]*/i;
+      const match = block.match(pattern);
+      if (match) {
+          var matchArray = Array.from(match)
+          var res = `<h${matchArray[1].length + 1}>${textformat(matchArray[2])}</h${matchArray[1].length + 1}>`
+          return textformat(res)
+        // return res
+      }
+  }
+
+  const heading2render = (block) => {
+      var pattern = /^(\w[^\n]*)\n((-|\=){4,})[\s\n]*/im;
+      const match = block.match(pattern);
+      if (match) {
+          var matchArray = Array.from(match)
+          if (matchArray[2][2] == "-") var htype = 1
+          else if (matchArray[2][2] == "=") var htype = 2
+          var res = `<h${htype}>${textformat(matchArray[1])}</h${htype}>`
+
+          return textformat(res)
+        // return res
+      }
+  }
+
+
+  const listrender = (md) => {
+      var ullistBlockPattern = /(^[\s\t]*(\*|-)\s+[^\n]*){1,}/mi
+      var ollistBlockPattern = /(^[\s\t]*\d+.\s+[^\n]*){1,}/mi
+      if (md.match(ollistBlockPattern)) {
+          var listblocktype = "ol"
+      } else if (md.match(ullistBlockPattern)) {
+          var listblocktype = "ul"
+      }
+
+
+      md = md.split(/\n+/)
+
+      md = md.map(line => {
+          var parseline = line
+
+          //toplevel or 
+
+          if (!line.match(/^([\t\s]+)[^\n]*/)) {
+              var matchol = line.match(/^([\t\s]*)(\d+).\s+([^\n]*)$/)
+              if (matchol) {
+                  parseline = `<ol><li class="no-${matchol[2]}">${matchol[3]}</li></ol>`
+              }
+              else {
+                  var matchul = line.match(/^([\t\s]*)(\*|-)\s+([^\n]*)$/)
+                  if (matchul) {
+                      parseline = `<ul><li>${matchul[3]}</li></ul>`
+                  }
+              }
+          }
+          // sublevel
+          else {
+              var matchol = line.match(/^([\t\s]*)(\d+).\s+([^\n]*)$/)
+              // var parseline = line
+              if (matchol) {
+                  parseline = `<${listblocktype}><ol><li class="no-${matchol[2]}">${matchol[3]}</li></ol></${listblocktype}>`
+              }
+              else {
+                  var matchul = line.match(/^([\t\s]*)(\*|-)\s+([^\n]*)$/)
+                  if (matchul) {
+                      parseline = `<${listblocktype}><ul><li>${matchul[3]}</li></ul></${listblocktype}>`
+                  }
+              }
+          }
+          return parseline
+      })
+
+      var res = md.join("\n\n").replaceAll(/<\/ul>\n+<ul>/g, "").replaceAll(/<\/ol>\n+<ol>/g, "").replaceAll("</ol><ol>", "").replaceAll("</ul><ul>", "")
+      return textformat(res)
+  }
+
+  const textformat = (md) => {
+
+      var inlinecodePattern = /(?<!`)`([^`]*?)`(?!`)/gmi;
+      match1 = md.matchAll(inlinecodePattern)
+      matchList = Array.from(match1)
+      matchList.forEach(p => {
+          md = md.replaceAll(p[0], `<code class='parsemd-code code-inline'>${p[1]}</code>`)
+      })
+
+
+      // // blockMath
+      //https://regex101.com/r/QdJcQS/1
+      var blockMathPattern = /\${2}([^$\n]+)\${2}/gm
+      match1 = md.matchAll(blockMathPattern)
+      matchList = Array.from(match1)
+      matchList.forEach(p => {
+          // log(p)
+          md = md.replaceAll(p[0], `\\[ ${p[1]} \\]`)
+      })
+
+
+      // // inlineMath
+      //https://regex101.com/r/QdJcQS/1
+      // var inlineMathPattern = /(?<!\$)\$([^$\n]+)\$(?!\$)/gm
+      var inlineMathPattern = /(?<!\$)\$([^$\n]+)\$(?!\$)/mg;
+
+      match1 = md.matchAll(inlineMathPattern)
+      matchList = Array.from(match1)
+      matchList.forEach(p => {
+          // log(p)
+          md = md.replaceAll(p[0], `\\( ${p[1]} \\)`)
+      })
+
+
+
+      // // imageurl
+      // https://regex101.com/r/EXVZcK/1
+
+      var imageUrlPattern = /!\[([^\]]*)]\("?([^\)"']*)"?\)/gm
+      match1 = md.matchAll(imageUrlPattern)
+      matchList = Array.from(match1)
+      matchList.forEach(p => {
+          //               console.log(p)
+          md = md.replaceAll(p[0], `\n<img src="${p[2]}" alt="${p[1]}" />`)
+
+      })
+
+      // // link
+      // https://regex101.com/r/APBkU8/1
+      // var linkPattern = /[^!]\[([^\]]*)\]\(([^\)]*)\)/gmi
+      var linkPattern = /(?<!!)\[([^\]]*)\]\(([^\)]*)\)/gmi
+
+      match1 = md.matchAll(linkPattern)
+      matchList = Array.from(match1)
+      matchList.forEach(p => {
+          //                    log(p)
+          md = md.replaceAll(p[0], `<a href="${p[2]}">${p[1]}</a>`)
+
+      })
+
+
+      // // bold/italic/emph
+      var italicPattern = /([*_]{1,3})(\S[^\*_\n]+?\S)\1/mig
+      //   var italicPattern = /(?<marks>\*{1,3}|_{1,3})(?<content>[^\s*_]+)\k<marks>/gmi
+        // var italicPattern = /([\s]+)((\*|_){1,3})([^\*_\n]+?)\1(?=\W)/gmi
+        match1 = md.matchAll(italicPattern)
+        matchList = Array.from(match1)
+        matchList.forEach(p => {
+            if (p[1].length == 3) {
+                md = md.replaceAll(p[0], `<em><strong>${p[2]}</strong></em>`)
+            }
+            else if (p[1].length == 2) {
+                md = md.replaceAll(p[0], `<strong>${p[2]}</strong>`)
+            }
+            else if (p[1].length == 1) {
+                md = md.replaceAll(p[0], `<em>${p[2]}</em>`)
+            }
+        })
+
+
+      // https://regex101.com/r/3GWtGB/1
+    //   var italicPattern = /(?<=\W+)([\*_]{3})(\S[^\*_\n]+?\S)\1(?=\W)/gmi
+    //   match1 = md.matchAll(italicPattern)
+    //   matchList = Array.from(match1)
+    //   matchList.forEach(p => {
+    //       md = md.replace(p[0], `<em><strong>${p[2]}</strong></em>`)
+    //   })
+
+    //   var italicPattern = /(?<=\W+)([\*_]{2})(\S[^\*_\n]+?\S)\1(?=\W)/gmi
+    //   match1 = md.matchAll(italicPattern)
+    //   matchList = Array.from(match1)
+    //   matchList.forEach(p => {
+    //       md = md.replace(p[0], `<strong>${p[2]}</strong>`)
+    //   })
+
+    //   var italicPattern = /(?<=\W+)([\*_])(\S[^\*_\n]+?\S)\1(?=\W)/gmi
+    //   match1 = md.matchAll(italicPattern)
+    //   matchList = Array.from(match1)
+    //   matchList.forEach(p => {
+    //     log(p[0])
+    //       md = md.replace(p[0], `<em>${p[2]}</em>`)
+    //   })
+
   
-  //check mdinput with checkblocktype then return match and remove matched part from mdinput and repeat till mdinput length is zero
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+      // // strikethrough
+      // https://regex101.com/r/MLsQRh/1
+      var strikethroughPattern = /~~(.*)~~/igm
+      // var strikethroughPattern =/~~([\s\S]*?)~~/gm;
+      match1 = md.matchAll(strikethroughPattern)
+      matchList = Array.from(match1)
+      matchList.forEach(p => {
+          md = md.replace(p[0], `<del class='parsedmd-del'>${p[1]} </del>`)
+      })
+
+
+
+      // reference
+      https://regex101.com/r/eLzXSC/1                                 
+      var referencelinkPattern = /(?<!!)\[([^\]]*)\]\s{0,3}\[([^\]]*)\]/gmi
+
+      match1 = md.matchAll(referencelinkPattern)
+      matchList = Array.from(match1)
+      matchList.forEach(p => {
+          //                    log(p)
+          md = md.replaceAll(p[0], `<a href="#${p[2]}">${p[1]}</a>`)
+
+      })
+
+      // Blockreferencelist
+      // https://regex101.com/r/xu97SN/1
+      var listBlockPattern = /(^ *(\[[^\]]*\]:)\s+[^\n]*){1,}/gmi
+      match1 = md.matchAll(listBlockPattern)
+      matchList = Array.from(match1)
+      matchList.forEach(p => {
+          var block = p[0]
+          // referencelistBlock
+          // https://regex101.com/r/JC0xSx/1
+          var listPattern = /^\[([^\]]*)\]:\s+([^\n]*)$/gmi
+          list = block.matchAll(listPattern)
+          listEntry = Array.from(list)
+          listEntry.forEach(li => {
+              block = block.replaceAll(li[0], `\n\t<span id="${li[1]}">${li[2]}</span> `)
+          })
+
+          // subreferencelist
+          // https://regex101.com/r/DYvI2z/1
+          var sublistPattern = /^ +(\*|-)\s+([^\n]*)$/gmi
+          list = block.matchAll(sublistPattern)
+          listEntry = Array.from(list)
+          listEntry.forEach(li => {
+              //                        block = block.replaceAll(li[0], `\n<ul>\n\t<li>${li[1]}</li></ul>`) trying sub list
+              block = block.replaceAll(li[0], `\n<ul>\n\t<li>${li[2]}</li></ul>`)
+          })
+
+          // md = md.replaceAll(p[0], `\n<ul>${block}</ul>`)
+          md = md.replaceAll(p[0], `\n${block}`)
+      })
+      return md
+
+  }
+
+  //subfunctions end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  var checkboxno = grab("input").length
   var lex = []
 
-  function checkPartialBlockType(testmdinput) {
-    matchData = checkBlockType(testmdinput);
-    return matchData;
-    
-  }
+  //preprocess for code to html
+  // // code
+  // https://regex101.com/r/WpO7gY/1
+  // codePattern = /```([^\s]*)([^```]*)```/gmi
+  var codePattern = /`{3}([^\n]*)\n([^`]*)`{3}/gmi
+  var match1 = mdinput.matchAll(codePattern)
+  var matchList = Array.from(match1)
+  matchList.forEach(p => {
+    //               console.log(p)
+    mdinput = mdinput.replaceAll(p[0], `\n<pre><code class="${p[1]}, language-${p[1]},code-block">${p[2]}</code></pre>`)
+  })
 
+
+
+  // identify block type and content
   while (mdinput.length > 0) {
-    var matchData = checkPartialBlockType(mdinput);
-    var unprocessed = mdinput.substr(matchData.content.length);
-    mdinput = unprocessed;
-    var match = matchData.content;
-    if (match.length > 0) {
-      lex.push(matchData)
-    }
-  }
-  console.log(JSON.parse(JSON.stringify(lex)))
+      var res = checkBlockTypeStage1(mdinput);
+      if (res != null) {
+          var type = res.type;
+          var content = res.match;
+          var unprocessed = res.unprocessed;
 
-  function verb(input){
-    var E = document.createElement('div');
-    E.innerHTML = input;
 
-    return E.innerHTML.toString().replaceAll("&", '&amp;').replaceAll('</', '&lt;&#47;').replaceAll("<", "&lt;").replaceAll(">", '&gt;')
-    // return input
-  };
-  function render(content,pattern,type) {
-    var renderedOutput = "";
-    if (type == 'code') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        var printcode = verb(p[2])
-          renderedOutput = `\n<pre><code class="${p[1]}, language-${p[1]},code-block">\n${printcode}</code></pre>`
-      });
-    }
-    else if (type == 'html') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        renderedOutput = `${p[0]}`
-      });
-    }
-    else if (type == 'htmlselfclosing') {
-      // log("htmlselfclosing")
-      var match1 = content.matchAll(pattern)
-      // log(match1)
-      var matchList = Array.from(match1)
-      // log(matchList)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        renderedOutput = `${p[0]}`
-      });
-    }
-    else if (type == 'heading') {
-      var match1 = content.matchAll(pattern)
-      var matchList = Array.from(match1)
-      // log(matchList)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        renderedOutput = `<h${p[1].length}>${p[2]}</h${p[1].length}>`
-      });
-    }
-    else if (type == 'headinglined') {
-      var match1 = content.matchAll(pattern)
-      // log(content)
-      var matchList = Array.from(match1)
-      // log(matchList)
-      var renderedOutput = "";
-      matchList.forEach(p => {
-        if (p[2].includes("=")) { htag="2" } else { htag="1" }
-        renderedOutput = `<h${htag}>${p[1]}</h${htag}>\n`
-      });
-    }
+          if (content.length > 0) {
 
-    
-    return renderedOutput;
-  
+              mdinput = unprocessed;
+              lex.push({
+                  type: type,
+                  content: content,
+              })
+          }
+      }
   }
 
 
-  //render lex to html
-  function Stage2renderLexBlocks(lex, callback){
-    for (var i = 0; i < lex.length; i++) {
-      var block = lex[i];
-      var type = block.type;
-      var content = block.content;
-      var pattern = blockCheck.find(o => o.type === type).renderpattern;
-      var rendered = render(content,pattern,type)
-      lex[i].rendered = rendered;
+  lex = lex.filter(o => o.type !== "empty")
 
-      //update preview
-      
-    }
-    return lex;
+
+  //foreachitem in lex
+  for (var j = 0; j < lex.length; j++) {
+      var block = lex[j]
+      var rend = ""
+      //renderhtml
+      if (block.type == "html1" || block.type == "html2") {
+          var rend = block.content
+      }
+      //rendercode
+      else if (block.type == "code") {
+          var rend = coderender(block.content)
+      }
+      //rendertable
+      else if (block.type == "table") {
+          var rend = tablerender(block.content)
+      }
+      //renderlist
+      else if (block.type == "list") {
+          var rend = listrender(block.content)
+      }
+      //renderblockquote
+      else if (block.type == "block" || block.type == "blockquote") {
+          var rend = blockquoterender(block.content)
+      }
+      //rendertab
+      else if (block.type == "tab") {
+          // var rend = tablerender(block.content)
+      }
+      //renderparagraph
+      else if (block.type == "paragraph") {
+          var rend = paragraphrender(block.content)
+      }
+      else if (block.type == "heading1") {
+          var rend = heading1render(block.content)
+      }
+      else if (block.type == "heading2") {
+          var rend = heading2render(block.content)
+      }
+
+      lex[j].render1 = rend
   }
 
-  lex = Stage2renderLexBlocks(lex)
-  // log(lex)
 
-
-  //render lex to html
-  // function Stage3renderLexBlocks(lex, callback){
-  //   for (var i = 0; i < lex.length; i++) {
-  //     var block = lex[i];
-  //     var type = block.type;
-  //     var content = block.content;
-  //     var pattern = blockCheck.find(o => o.type === type).renderpattern;
-  //     var rendered = render(content,pattern,type)
-  //     lex[i].rendered = rendered;
-
-      
-  //   }
-  //   return lex;
-  // }
-
-  // lex = Stage3renderLexBlocks(lex)
-
-
-  // combine html and render
-  function combineRendered(lex, callback){
-    var joinedhtml = ""
-    for (var i = 0; i < lex.length; i++) {
-      joinedhtml += lex[i].rendered
-    }
-    return joinedhtml;
+  var rend1join = ""
+  for (var j = 0; j < lex.length; j++) {
+      rend1join = `${rend1join}${lex[j].render1}`
   }
 
-  var renderedFinal = combineRendered(lex)
+  callback(rend1join)
+  return rend1join;
 
 
-  //temp check
-  // append(`#preview-code`, renderedFinal)
-
-
-  callback(renderedFinal)
-  return renderedFinal;
-
-  
 }
-
-
-
-
-
-
+//parsemdbeta end

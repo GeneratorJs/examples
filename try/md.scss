@@ -1,0 +1,259 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+}
+
+:root{
+  --hue:260;
+  --sat:90%;
+  --light:40%;
+  --fontFamily:"Roboto", sans-serif;
+  --fontScale:1.2;
+  --hueAscent:30;
+  --satAscent:20%;
+}
+
+body {
+  font-family: var(--fontFamily);
+  font-size: calc(1rem * var(--fontScale));
+  line-height: 1.2;
+  color: #eee;
+  background-color: #222;
+}
+
+html,
+body {
+  height: 100vh;
+  margin: 0;
+}
+
+.app {
+  padding: 0;
+  margin: 0;
+  position: relative;
+  height: 100%;
+  max-height: 100%;
+  width: 100vw;
+  display: grid;
+  grid-template-rows: min-content 1fr min-content;
+
+}
+
+.header,
+.footer {
+  width: 100%;
+  z-index: 100;
+  position:relative;
+}
+
+
+.footer{
+  display: block;
+}
+
+
+.nav{
+  padding:1rem;
+}
+
+ul{
+  text-decoration: none;
+  list-style: none;
+}
+.main {
+  position: relative;
+  display: grid;
+  grid-template-rows: min-content 1fr;
+  height: 100%;
+
+  .instructions{
+    padding:1rem;
+    display: flex;
+    flex-direction: column;
+    }
+
+
+
+  #optionbar{
+    width:minmax(100%,400px);
+    padding-inline:1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap:1em;
+    flex-flow: row-reverse;
+
+     
+
+    .button{
+      margin: .5em;
+      font-size: .8em;
+      padding: .2em .6em !important;
+      cursor: pointer;
+
+
+
+      
+      #fileName {
+        padding-inline: .4em;
+          border-radius:.2em;
+          display: inline;
+          margin: 0 auto;
+  
+  
+          &:hover{
+            background-color: hsl(var(--hue), 10%, 100%);
+            color:black;
+            font-style:italic;
+            font-weight: 100;
+            cursor: text;
+          }
+      }
+    }
+
+
+
+  
+    
+  }
+  .gridRoot {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+    background-color: hsla(var(--hueAscent,10), var(--satAscent,0%), 100%, 0.1);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+
+    .block-heading {
+      text-transform: capitalize;
+      padding-inline: 1em;
+      padding-block: .5em;
+      // background-color: hsla(calc(var(--hue,160) ), var(--sat,100%), var(--light,50%), 0.562);
+      background: hsla(calc(var(--hue) - 60), 70%, 40%, .4);
+      font-style:italic;
+    }
+
+    
+  }
+}
+
+.code {padding:1em;}
+
+.code,pre {
+  word-break: break-all;
+  word-wrap: break-word;
+}
+
+.beforehtml .code{
+  background-color: hsl(calc(var(--hue) + 20), 100%, 6%);
+
+  &:focus,&:focus-visible {
+    background-color: hsl(calc(var(--hue,160) + 20), 100%, 18%);
+  }
+}
+
+.jscode .code{
+  background-color: hsl(calc(var(--hue,160) + 120), 33%, 9%);
+
+    blockquote{
+      padding:1em;
+      font-style: italic;
+    }
+
+
+    p,div,img,svg,object{
+      max-width: 100%;
+      padding-block:1em;
+    }
+
+    table,ul,ol{
+      padding-block: 1em;
+    }
+
+}
+.column {
+  min-height: 0px;
+  max-height: 100%;
+  display:grid;
+  grid-template-rows: min-content 1fr;
+  height: 100%;
+
+
+  .box{
+    max-height: 100%;
+    overflow: hidden;
+    min-height: 0px;
+
+    .scrolly {
+      height: 100%;
+      overflow-y: auto;
+      min-height: 0px;
+    }
+
+    .code {
+      padding: 1em;
+    }
+  }
+
+}
+
+
+
+
+
+a{
+  text-decoration: none;
+  color:aquamarine;
+  text-decoration: underline;
+}
+
+.button{
+  padding:.5em;
+  border-radius: .5em;
+  box-shadow: 1px 1px 2px hsla(calc(var(--hue,160) + -140),50%,80%,.8);
+  background-color: hsl(calc(var(--hue,160) - 20), 60%, 55%);
+  background-color:hsla(calc(var(--hue) - 60), 70%, 40%, 1);
+  // color:black;
+  margin-block: .5em;;
+  flex-grow: 0;
+  width: min-content;
+  font-weight: bolder;
+  transition: all 500ms ease-in-out;
+  &:hover{
+    background-color: hsl(calc(var(--hue,160) - 20), 60%, 55%);
+  }
+
+}
+
+// #testrender-block{
+//   display:none;
+// }
+
+#output-code {
+  background-color: hsl(var(--hue,160), 30%, 05%);
+
+  *{
+    border: 3px solid white;
+    padding:3px;
+    margin:3px;
+  }
+}
+
+
+#saveCanvas{
+  display: flex;
+  flex-direction: column;
+  background-color: hsl(var(--hue,180), 100%, 10%);
+  h1{
+    margin-inline: auto;
+    padding:.3em;
+  }
+
+  #comment{
+    padding:1em;
+    margin: 0 auto;
+  }
+}

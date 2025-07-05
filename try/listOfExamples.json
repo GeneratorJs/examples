@@ -1,0 +1,42 @@
+[
+  {
+    beforestring: `<div id="testmain">Test Main Text</div>`, 
+    codeString: `append("#testmain", gen("p", "", "hi")) <br>`, 
+    comment: `Use of append() function, this function takes three arguments, <br> 1st to target parent element where we want to append content, it can be dom element, tag, #id or .class, <br> 2nd is content that needs to be inserted, can be text, HTML or another gen() function. <br> 3rd is optional by default is 'after'.<br>Example showing append after with 2 arguments.`
+  }, 
+  {
+    beforestring: `<div id="testmain">Test Main Text</div>`, 
+    codeString: `append("#testmain", gen("p", "", "hi"), "after") <br>\/\/append("#testmain", gen("p", "", "hi"), "a")`, 
+    comment: `append() function with third argument as 'after' or 'a'.<br>Example showing append after with 3 arguments.`
+  }, 
+  {
+    beforestring: `<div id="testmain">Test Main Text</div>`, 
+    codeString: `append("#testmain", gen("p", "", "hi"), "b")  <br>\/\/append("#testmain", gen("p", "", "hi"), "before")`, 
+    comment: `append() to append before keeping previous content. <br>Example showing append before.`
+  }, 
+  {
+    beforestring: `<div id="testmain">Test Main Text</div>`, 
+    codeString: `append("#testmain", gen("p", "", "hi"), "o") <br>\/\/append("#testmain", gen("p", "", "hi"), "over")`, 
+    comment: `append() to overwrite over previous content, removing previous content. <br>Example showing append overwrite over previous content`
+  }, 
+  {
+    beforestring: `<div id="testmain">Test Main Text</div>`, 
+    codeString: `append("#testmain", gen("p", "", "hi"), "r") <br>\/\/append("#testmain", gen("p", "", "hi"), "replace")`, 
+    comment: `append() to replace previous html tag with content, completely overwriting. <br>Example showing append replace replacing previous html html completely`
+  }, 
+  {
+    beforestring: `<div id="testmain">Test Main Text</div>`, 
+    codeString: `append("#testmain", gen("div", "parent", "hi"), "p") <br>\/\/append("#testmain", gen("div", "parent", "hi"), "parent")`, 
+    comment: `append() as parent of previous html tag, making previous tag chile of appended tag. <br>Example showing append parent will add new content in place of previous tag and add previous tag as its child element.`, 
+  }, 
+  {
+    beforestring: `<div id="testmain">Test Main Text</div>`, 
+    codeString: `append("#testmain", gen(div, "IDNAME", "ActualContent", "class1, class2, class3", {"attr1":"attr1val", "attr2":"attr2val"}), "o")`, 
+    comment: `Next we learn gen() function to create html element in the DOM. <br> consider a given tag <div id="IDNAME" class="class1 class2 class3" attr1="attr1val" attr2="attr2val">ActualContent</div>. <br> The important things in above tag are <br>1 tagname: "div"<br>2 id: "IDNAME"<br>3 content: "ActualContent"<br>4 classlist: "class1 class2 class3" <br>These 4 are important values, sometimes there are other attributes like in this case, we just create object of all the remaining attributed like, <br>5 dictionary:{<br>"attr1":"attr1val", <br>"attr2":"attr2val"} div<br><br> To create similar tag in DOM using gen() function<br><br>
+    <br> gen take 4 input argument, and some times 5th as object or single value.
+    <br>We can create above tag like<br>
+    gen(div, "IDNAME", "ActualContent", "class1, class2, class3", {"attr1":"attr1val", "attr2":"attr2val"})
+
+    `
+  }
+];
