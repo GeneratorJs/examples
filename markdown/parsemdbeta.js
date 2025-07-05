@@ -336,50 +336,17 @@ const parsemdbeta = (mdinput, callback) => {
         })
 
 
-      // https://regex101.com/r/3GWtGB/1
-    //   var italicPattern = /(?<=\W+)([\*_]{3})(\S[^\*_\n]+?\S)\1(?=\W)/gmi
-    //   match1 = md.matchAll(italicPattern)
-    //   matchList = Array.from(match1)
-    //   matchList.forEach(p => {
-    //       md = md.replace(p[0], `<em><strong>${p[2]}</strong></em>`)
-    //   })
-
-    //   var italicPattern = /(?<=\W+)([\*_]{2})(\S[^\*_\n]+?\S)\1(?=\W)/gmi
-    //   match1 = md.matchAll(italicPattern)
-    //   matchList = Array.from(match1)
-    //   matchList.forEach(p => {
-    //       md = md.replace(p[0], `<strong>${p[2]}</strong>`)
-    //   })
-
-    //   var italicPattern = /(?<=\W+)([\*_])(\S[^\*_\n]+?\S)\1(?=\W)/gmi
-    //   match1 = md.matchAll(italicPattern)
-    //   matchList = Array.from(match1)
-    //   matchList.forEach(p => {
-    //     log(p[0])
-    //       md = md.replace(p[0], `<em>${p[2]}</em>`)
-    //   })
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+     
   
       // // strikethrough
       // https://regex101.com/r/MLsQRh/1
-      var strikethroughPattern = /~~(.*)~~/igm
-      // var strikethroughPattern =/~~([\s\S]*?)~~/gm;
+    //   var strikethroughPattern = /([~=]{2})(.*)\1/igm
+    var strikethroughPattern = /([~=]{2})([^~=\n]+)\1/igm
       match1 = md.matchAll(strikethroughPattern)
       matchList = Array.from(match1)
       matchList.forEach(p => {
-          md = md.replace(p[0], `<del class='parsedmd-del'>${p[1]} </del>`)
+        if (p[1][0]== "~") {md = md.replace(p[0], `<del class='parsedmd-del'>${p[2]} </del>`)}
+        else if (p[1][0]== "=") {md = md.replace(p[0], `<mark class='parsedmd-mark'>${p[2]} </mark>`)}
       })
 
 

@@ -1,34 +1,46 @@
-# **Functions in Python**
+*Italic* 
+**Bold** 
+~~Strikethrough~~ 
+`Inline Code` 
+***Bold+Italic*** 
+==Highlight== (if supported)
 
-**Introduction:**
-Functions are blocks of reusable code designed to perform specific tasks. They help organize code, reduce repetition, and enhance readability. Python functions can take inputs, process data, and return results. Functions are essential for structuring programs in a modular and efficient way.
 
 
-#### **1. Defining Your Own Functions**
+# H1
+## H2
+### H3
+#### H4
 
-**Advanced Explanation:**
-In Python, you define a function using the `def` keyword followed by the function name and parentheses `()`. Inside the parentheses, you can specify parameters (if any). The function body contains the code that runs when the function is called.
+- Unordered item
+- Nested item
 
-**Example Code:**
+1. Ordered item
+2. Second item
+    - Mixed nesting
 
-```python
-def greet(name):
-    """Greets a person by their name."""
-    return f"Hello, {name}!"
 
-# Calling the function
-message = greet("Alice")
-print(message)  # Output: Hello, Alice!
+[Google](https://google.com) 
+![Placeholder](https://via.placeholder.com/150) 
+<https://autolink.com>
+
+```javascript
+console.log("Syntax highlighting");
 ```
 
-**Explanation:**
-- The function `greet` is defined with a single parameter `name`.
-- The function returns a greeting message that includes the given name.
-- The function is called with the argument `"Alice"`, and the output is printed.
+| Syntax | Works? |
+| ------ | ------ |
+| Tables |       |
 
----
+> Blockquote 
+> - With **formatting**
 
-#### **2. Parameters**
 
-**Advanced Explanation:**
-Parameters are the variables listed inside the
+- [ ] All text formatting renders correctly 
+- [ ] Headings show hierarchy 
+- [ ] Lists nest properly 
+- [ ] Links/images are clickable 
+- [ ] Code blocks have syntax highlighting 
+- [ ] Tables align correctly 
+- [ ] Blockquotes are indented 
+- [ ] Footnotes appear (if supported)
